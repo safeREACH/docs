@@ -155,7 +155,7 @@ The following errors can occur:
 - HTTP 403 Forbidden: missing permissions
 - HTTP 409 Conflict: input data conflicting with current data set; see the description of the response for more information
 
-### Import recipients - CSV
+## Import recipients - CSV
 
 _**/api/public/v1/recipient/import**_
 
@@ -198,7 +198,7 @@ id;externalId;customerId;givenname;surname;msisdn;email;comment;G1;G2;G3
 <UUIDv4>;;500027;Martina;Musterfrau;+4367612345678;martina.musterfrau@example.com;;0;0;0
 ```
 
-### Import groups - JSON
+## Import groups - JSON
 
 _**/api/public/v1/group/import**_
 
@@ -277,7 +277,7 @@ Following errors can occur:
 - HTTP 403 Forbidden: missing permissions
 - HTTP 409 Conflict: input data conflicting with current data set; see the description of the response for more information
 
-### Import groups - CSV
+## Import groups - CSV
 
 _**/api/public/v1/group/import**_
 
@@ -312,7 +312,7 @@ id;exteranlId;customerId;groupId;name
 <UUIDv4>;externalId;500027;G3;Alle Kameraden
 ```
 
-### Export recipients - CSV / JSON
+## Export recipients - CSV / JSON
 
 _**/api/public/v1/group/{{customerOrGroupId}}/export**_
 

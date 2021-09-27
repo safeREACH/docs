@@ -43,9 +43,9 @@ For API usage your `customerOrGroupId`, an automatic alarm trigger user `usernam
 
 ```json
 {
-    "scenarioConfigId" : "32849abcdef23343",
-    "customerId" : "500027",
-    "name": "Szenario 1"
+  "scenarioConfigId": "32849abcdef23343",
+  "customerId": "500027",
+  "name": "Szenario 1"
 }
 ```
 
@@ -63,13 +63,13 @@ For API usage your `customerOrGroupId`, an automatic alarm trigger user `usernam
 
 ```json
 {
-    "scenarioId": "123-ABC-asdfqwerasdf",
-    "scenarioConfigId": "123-ABC-asdfqwerasdf-CONFIG",
-    "authorId": "author1",
-    "authorName": "Max Mustermann",
-    "creationDate": "2018-12-13T14:56:53.016Z",
-    "startDate": "2018-12-13T14:56:53.016Z",
-    "endDate": null,
+  "scenarioId": "123-ABC-asdfqwerasdf",
+  "scenarioConfigId": "123-ABC-asdfqwerasdf-CONFIG",
+  "authorId": "author1",
+  "authorName": "Max Mustermann",
+  "creationDate": "2018-12-13T14:56:53.016Z",
+  "startDate": "2018-12-13T14:56:53.016Z",
+  "endDate": null
 }
 ```
 
@@ -89,19 +89,21 @@ For API usage your `customerOrGroupId`, an automatic alarm trigger user `usernam
 
 ```json
 {
-    "scenarioId": "123-ABC-asdfqwerasdf",
-    "scenarioConfigId": "123-ABC-asdfqwerasdf-CONFIG",
-    "authorId": "author1",
-    "authorName": "Max Mustermann",
-    "usersAlertedCount": 5,
-    "creationDate": "2018-12-13T14:56:53.016Z",
-    "startDate": "2018-12-13T14:56:53.016Z",
-    "endDate": null,
-    "alarms": [ AlarmData ]
+  "scenarioId": "123-ABC-asdfqwerasdf",
+  "scenarioConfigId": "123-ABC-asdfqwerasdf-CONFIG",
+  "authorId": "author1",
+  "authorName": "Max Mustermann",
+  "usersAlertedCount": 5,
+  "creationDate": "2018-12-13T14:56:53.016Z",
+  "startDate": "2018-12-13T14:56:53.016Z",
+  "endDate": null,
+  "alarms": [
+    AlarmData
+  ]
 }
 ```
 
-### List scenario configurations
+## List scenario configurations
 
 _**/api/alarm/v1/scenario/config/list**_
 
@@ -118,9 +120,11 @@ Example:
 
 ```json
 {
-    "username" : "myUser",
-    "password" : "mySuperSecretPwd",
-    "customerIds" : ["500027"],
+  "username": "myUser",
+  "password": "mySuperSecretPwd",
+  "customerIds": [
+    "500027"
+  ]
 }
 ```
 
@@ -130,9 +134,11 @@ HTTP 200 OK
 
 ```json
 {
-    "result" : "OK",
-    "descirption": "",
-    "configs" :  [ <ScenarioConfigData> ]
+  "result": "OK",
+  "descirption": "",
+  "configs": [
+    <ScenarioConfigData>
+  ]
 }
 ```
 
@@ -142,7 +148,7 @@ The following errors can occur:
 - HTTP 401 Unauthorized: invalid credentials
 - HTTP 403 Forbidden: missing permissions
 
-### Trigger a scenario
+## Trigger a scenario
 
 _**/api/alarm/v1/scenario/trigger**_
 
@@ -159,12 +165,11 @@ _**/api/alarm/v1/scenario/trigger**_
 
 ```json
 {
-    "username" : "myUser",
-    "password" : "mySuperSecretPwd",
-    "customerId" : "500027",
-    "scenarioConfigId" : "32849abcdef23343",
-    "additionalText": "Zusatzinfo vom User"
-    
+  "username": "myUser",
+  "password": "mySuperSecretPwd",
+  "customerId": "500027",
+  "scenarioConfigId": "32849abcdef23343",
+  "additionalText": "Zusatzinfo vom User"
 }
 ```
 
@@ -174,9 +179,9 @@ HTTP 200 OK
 
 ```json
 {
-    "result" : "OK",
-    "descirption": "",
-    "scenarioId" :  "123-ABC-asdfqwerasdf"
+  "result": "OK",
+  "descirption": "",
+  "scenarioId": "123-ABC-asdfqwerasdf"
 }
 ```
 
@@ -186,7 +191,7 @@ The following errors can occur:
 - HTTP 401 Unauthorized: invalid credentials
 - HTTP 403 Forbidden: missing permissions
 
-### Query a scenario
+## Query a scenario
 
 _**/api/alarm/v1/scenario/query**_
 
@@ -202,11 +207,10 @@ _**/api/alarm/v1/scenario/query**_
 
 ```json
 {
-    "username" : "myUser",
-    "password" : "mySuperSecretPwd",
-    "customerId" : "500027",
-    "scenarioId" :  "123-ABC-asdfqwerasdf"
-    
+  "username": "myUser",
+  "password": "mySuperSecretPwd",
+  "customerId": "500027",
+  "scenarioId": "123-ABC-asdfqwerasdf"
 }
 ```
 
@@ -216,9 +220,11 @@ HTTP 200 OK
 
 ```json
 {
-    "result" : "OK",
-    "descirption": "",
-    "scenarioData": { ScenarioData }
+  "result": "OK",
+  "descirption": "",
+  "scenarioData": {
+    ScenarioData
+  }
 }
 ```
 
@@ -228,7 +234,7 @@ The following errors can occur:
 - HTTP 401 Unauthorized: invalid credentials
 - HTTP 403 Forbidden: missing permissions
 
-### List scenarios
+## List scenarios
 
 _**/api/alarm/v1/scenario/list**_
 
@@ -245,14 +251,14 @@ _**/api/alarm/v1/scenario/list**_
 
 ```json
 {
-    "username" : "myUser",
-    "password" : "mySuperSecretPwd",
-    "customerId" : "500027",
-    "startedOrEndedAfter": "2020-10-12T09:18:53.740Z",
-    "scenarioConfigIds": [
-        "0123-ABC-asdfqwerasdf-CONFIG1",
-        "0123-ABC-asdfqwerasdf-CONFIG2"
-    ]
+  "username": "myUser",
+  "password": "mySuperSecretPwd",
+  "customerId": "500027",
+  "startedOrEndedAfter": "2020-10-12T09:18:53.740Z",
+  "scenarioConfigIds": [
+    "0123-ABC-asdfqwerasdf-CONFIG1",
+    "0123-ABC-asdfqwerasdf-CONFIG2"
+  ]
 }
 ```
 
@@ -262,14 +268,16 @@ HTTP 200 OK
 
 ```json
 {
-    "result" : "OK",
-    "descirption": "",
-    "startedOrEndedAfter": "2020-10-12T09:18:53.740Z",
-    "startedOrEndedBefore": "2020-10-12T09:48:54.068Z",
-    "scenarioConfigIds": [
-        "0123-ABC-asdfqwerasdf
-    ]
-    "scenarioPreviews": { ScenarioPreviewData Objekt }
+  "result": "OK",
+  "descirption": "",
+  "startedOrEndedAfter": "2020-10-12T09:18:53.740Z",
+  "startedOrEndedBefore": "2020-10-12T09:48:54.068Z",
+  "scenarioConfigIds": [
+    "0123-ABC-asdfqwerasdf"
+  ],
+  "scenarioPreviews": {
+    <ScenarioPreviewData>
+  }
 }
 ```
 
