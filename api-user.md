@@ -8,6 +8,7 @@
 - v2.3: Rename `customerOrGroupId` to `customerId` in data objects (2020-03-05)
 - v2.4: Add optional `deleteOnlyExternal` flag for import requests (2020-04-09)
 - v2.5: Fix typo: `useExternalId` should be named `externalId` (2020-04-14)
+- v2.6: Add optional `channels` attribute to `PublicRecipientData` to restrict / configure notification channels (2021-10-01)
 
 ## General
 
@@ -56,10 +57,22 @@ The purpose of the API is to export recipients and their assigned groups to exte
 - email: string - optional - e-mail address
 - comment: string- optional - e.g. division in organisation or other additional information
 - groups: list of objects of the type `RecipientGroupParticipationData` - mandatory can be an empty list
+- channels: list of `Channel` - optional - restricted / configured notification channels
 
 #### RecipientGroupParticipationData
 
 - groupId: string - mandatory e.g. "G1"
+
+#### Channel
+
+> If now automatic channel restriction is preferred it is recommended to leave the channels attribute `null`.
+> Submitting and empty list is handled the same as `null`.
+> `SMS` and `VOICE` are only sent if the safeREACH app is not installed or not reachable.
+
+- `SMS`
+- `PUSH`
+- `VOICE`
+- `EMAIL`
 
 #### GroupData
 
@@ -98,7 +111,7 @@ With a HTTP POST request with the header: `Content-Type: application/json` recip
       "id": "<UUIDv4>",
       "externalId": "",
       "customerId": "500027",
-      "msisdn": "+4366412345678",
+      "msisdn": "+436641234567890",
       "givenname": "Max",
       "surname": "Mustermann",
       "email": null,
@@ -116,12 +129,32 @@ With a HTTP POST request with the header: `Content-Type: application/json` recip
       "id": "<UUIDv4>",
       "externalId": "",
       "customerId": "500027",
-      "msisdn": "+4367612345678",
+      "msisdn": "+436761234567890",
       "givenname": "Martina",
       "surname": "Musterfrau",
       "email": "martina.musterfrau@example.com",
       "comment": "Division 2",
-      "groups": []
+      "groups": [],
+      "channels": [
+        "PUSH",
+        "EMAIL",
+        "SMS",
+        "VOICE"
+      ]
+    },
+    {
+      "id": "<UUIDv4>",
+      "externalId": "",
+      "customerId": "500027",
+      "msisdn": "+491901234567890",
+      "givenname": "Erwin",
+      "surname": "Email",
+      "email": "erwin.email@example.com",
+      "comment": "Only receives emails",
+      "groups": [],
+      "channels": [
+        "EMAIL"
+      ]
     }
   ]
 }
