@@ -107,7 +107,7 @@ For API usage your `customerOrGroupId`, an automatic alarm trigger user `usernam
 
 _**/api/alarm/v1/scenario/config/list**_
 
-**Method:** POST
+**Method:** POST  
 **Header:** `Content-Type: application/json`
 
 #### Request payload
@@ -148,11 +148,11 @@ The following errors can occur:
 - HTTP 401 Unauthorized: invalid credentials
 - HTTP 403 Forbidden: missing permissions
 
-## Trigger a scenario via its configId
+## Trigger a scenario via its id
 
 _**/api/alarm/v1/scenario/trigger**_
 
-**Method:** POST  
+**Method:** POST    
 **Header:** `Content-Type: application/json`
 
 - username: string - mandatory
@@ -195,7 +195,7 @@ The following errors can occur:
 
 _**/api/alarm/v1/scenario/trigger/code**_
 
-**Method:** POST  
+**Method:** POST    
 **Header:** `Content-Type: application/json`
 
 - username: string - mandatory
@@ -238,7 +238,7 @@ The following errors can occur:
 
 _**/api/alarm/v1/scenario/query**_
 
-**Method:** POST
+**Method:** POST  
 **Header:** `Content-Type: application/json`
 
 - username: string - mandatory
@@ -281,7 +281,7 @@ The following errors can occur:
 
 _**/api/alarm/v1/scenario/list**_
 
-**Method:** POST
+**Method:** POST  
 **Header:** `Content-Type: application/json`
 
 - username: string - mandatory
