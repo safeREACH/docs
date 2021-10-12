@@ -107,7 +107,7 @@ For API usage your `customerOrGroupId`, an automatic alarm trigger user `usernam
 
 _**/api/alarm/v1/scenario/config/list**_
 
-**Method:** POST
+**Method:** POST  
 **Header:** `Content-Type: application/json`
 
 #### Request payload
@@ -148,11 +148,11 @@ The following errors can occur:
 - HTTP 401 Unauthorized: invalid credentials
 - HTTP 403 Forbidden: missing permissions
 
-## Trigger a scenario
+## Trigger by scenario config id
 
 _**/api/alarm/v1/scenario/trigger**_
 
-**Method:** POST
+**Method:** POST    
 **Header:** `Content-Type: application/json`
 
 - username: string - mandatory
@@ -191,11 +191,54 @@ The following errors can occur:
 - HTTP 401 Unauthorized: invalid credentials
 - HTTP 403 Forbidden: missing permissions
 
+## Trigger by scenario code
+
+_**/api/alarm/v1/scenario/trigger/code**_
+
+**Method:** POST    
+**Header:** `Content-Type: application/json`
+
+- username: string - mandatory
+- password: string - mandatory
+- customerId: string - mandatory
+- scenarioConfigId: string - mandatory
+- additionalText: string - optional
+
+#### Example request
+
+```json
+{
+  "username": "myUser",
+  "password": "mySuperSecretPwd",
+  "customerId": "500027",
+  "code": "V1",
+  "additionalText": "Zusatzinfo vom User"
+}
+```
+
+#### Response
+
+HTTP 200 OK
+
+```json
+{
+  "result": "OK",
+  "descirption": "",
+  "scenarioId": "123-ABC-asdfqwerasdf"
+}
+```
+
+The following errors can occur:
+
+- HTTP 400 BAD Request: malformed JSON request received
+- HTTP 401 Unauthorized: invalid credentials
+- HTTP 403 Forbidden: missing permissions
+
 ## Query a scenario
 
 _**/api/alarm/v1/scenario/query**_
 
-**Method:** POST
+**Method:** POST  
 **Header:** `Content-Type: application/json`
 
 - username: string - mandatory
@@ -238,7 +281,7 @@ The following errors can occur:
 
 _**/api/alarm/v1/scenario/list**_
 
-**Method:** POST
+**Method:** POST  
 **Header:** `Content-Type: application/json`
 
 - username: string - mandatory
