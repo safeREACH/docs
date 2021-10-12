@@ -191,7 +191,7 @@ The following errors can occur:
 - HTTP 401 Unauthorized: invalid credentials
 - HTTP 403 Forbidden: missing permissions
 
-## Trigger a scenario via its code
+## Trigger by scenario code
 
 _**/api/alarm/v1/scenario/trigger/code**_
 
