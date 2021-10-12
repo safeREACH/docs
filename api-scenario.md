@@ -148,7 +148,7 @@ The following errors can occur:
 - HTTP 401 Unauthorized: invalid credentials
 - HTTP 403 Forbidden: missing permissions
 
-## Trigger a scenario via its id
+## Trigger by scenario config id
 
 _**/api/alarm/v1/scenario/trigger**_
 
