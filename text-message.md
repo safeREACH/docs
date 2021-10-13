@@ -8,7 +8,7 @@
 
 ### Target msisdn
 
-All text messages needs to be sent to: `+43676800937300`
+All text messages need to be sent to: `+43676800937300`
 
 ## Trigger a scenario
 
