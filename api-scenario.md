@@ -103,6 +103,20 @@ For API usage your `customerOrGroupId`, an automatic alarm trigger user `usernam
 }
 ```
 
+#### RecipientConfiguration
+
+- type: one of `"MSISDN"`, `"GROUP"`, `"CASCADE"`
+- target
+
+**Example:**
+
+```jsonc
+{
+  "type": "MSISDN",
+  "target": "..." // some phone number
+}
+```
+
 ## List scenario configurations
 
 _**/api/alarm/v1/scenario/config/list**_
@@ -160,6 +174,7 @@ _**/api/alarm/v1/scenario/trigger**_
 - customerId: string - mandatory
 - scenarioConfigId: string - mandatory
 - additionalText: string - optional
+- additionalRecipients: RecipientConfiguration[] - optional
 
 #### Example request
 
@@ -169,7 +184,13 @@ _**/api/alarm/v1/scenario/trigger**_
   "password": "mySuperSecretPwd",
   "customerId": "500027",
   "scenarioConfigId": "32849abcdef23343",
-  "additionalText": "Zusatzinfo vom User"
+  "additionalText": "Zusatzinfo vom User",
+  "additionalRecipients": [
+    {
+      "type": "MSISDN",
+      "target": "<a phone number>"
+    }
+  ]
 }
 ```
 
@@ -203,6 +224,7 @@ _**/api/alarm/v1/scenario/trigger/code**_
 - customerId: string - mandatory
 - scenarioConfigId: string - mandatory
 - additionalText: string - optional
+- additionalRecipients: RecipientConfiguration[] - optional
 
 #### Example request
 
@@ -212,7 +234,13 @@ _**/api/alarm/v1/scenario/trigger/code**_
   "password": "mySuperSecretPwd",
   "customerId": "500027",
   "code": "V1",
-  "additionalText": "Zusatzinfo vom User"
+  "additionalText": "Zusatzinfo vom User",
+  "additionalRecipients": [
+    {
+      "type": "MSISDN",
+      "target": "<a phone number>"
+    }
+  ]
 }
 ```
 
