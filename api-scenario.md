@@ -106,14 +106,14 @@ For API usage your `customerOrGroupId`, an automatic alarm trigger user `usernam
 #### RecipientConfiguration
 
 - type: one of `"MSISDN"`, `"GROUP"`, `"CASCADE"`
-- target
+- target: depending on `type`, either a group or cascade ID, or a telephone number with country prefix ([E. 164 format](https://en.wikipedia.org/wiki/E.164))
 
 **Example:**
 
 ```jsonc
 {
   "type": "MSISDN",
-  "target": "..." // some phone number
+  "target": "+4367712345678"
 }
 ```
 
@@ -188,7 +188,7 @@ _**/api/alarm/v1/scenario/trigger**_
   "additionalRecipients": [
     {
       "type": "MSISDN",
-      "target": "<a phone number>"
+      "target": "+4367712345678"
     }
   ]
 }
@@ -238,7 +238,7 @@ _**/api/alarm/v1/scenario/trigger/code**_
   "additionalRecipients": [
     {
       "type": "MSISDN",
-      "target": "<a phone number>"
+      "target": "+4367712345678"
     }
   ]
 }
