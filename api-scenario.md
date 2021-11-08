@@ -5,7 +5,9 @@
 - v1.0: Initial draft (2017-02-19)
 - v1.1: Added `additionalText` property (2018-12-14)
 - v1.2: Deprecated `LIVE` and `PRACTICE` trigger types (2020-10-12)
-- v1.3: Added new scenario list list endpoint with `cutOff` and `configId` filters (2020-10-12)
+- v1.3: Added new scenario list endpoint with `cutOff` and `configId` filters (2020-10-12)
+- v1.4: Added Trigger by scenario code endpoint (2021-10-12)
+- v1.5: Added `additionalRecipients` attribute to trigger requests (2021-11-08)
 
 ## General
 
