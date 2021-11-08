@@ -108,14 +108,24 @@ For API usage your `customerOrGroupId`, an automatic alarm trigger user `usernam
 - type: one of `"MSISDN"`, `"GROUP"`, `"CASCADE"`
 - target: depending on `type`, either a group or cascade ID, or a telephone number with country prefix ([E. 164 format](https://en.wikipedia.org/wiki/E.164))
 
-**Example:**
+**Examples:**
 
 ```jsonc
+// RecipientConfiguration where the target is a phone number
 {
   "type": "MSISDN",
   "target": "+4367712345678"
 }
 ```
+
+```jsonc
+// RecipientConfiguration where the target is a group
+{
+  "type": "GROUP"
+  "target": "G1"
+}
+```
+
 
 ## List scenario configurations
 
