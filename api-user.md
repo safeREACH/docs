@@ -9,6 +9,7 @@
 - v2.4: Add optional `deleteOnlyExternal` flag for import requests (2020-04-09)
 - v2.5: Fix typo: `useExternalId` should be named `externalId` (2020-04-14)
 - v2.6: Add optional `channels` attribute to `PublicRecipientData` to restrict / configure notification channels (2021-10-01)
+- v2.7: Add documentation for recipient deletion endpoints (2022-04-11)
 
 ## General
 
@@ -58,6 +59,12 @@ The purpose of the API is to export recipients and their assigned groups to exte
 - comment: string- optional - e.g. division in organisation or other additional information
 - groups: list of objects of the type `RecipientGroupParticipationData` - mandatory can be an empty list
 - channels: list of `Channel` - optional - restricted / configured notification channels
+
+#### RecipientBaseData
+
+- id: string - optional - `<UUIDv4>` - mandatory for id usage
+- externalId: string - optional - mandatory for external id usage
+- customerId: string - mandatory - can be set to "*" if every available customer id should be targeted
 
 #### RecipientGroupParticipationData
 
@@ -393,3 +400,267 @@ The following errors can occur:
 
 - HTTP 401 Unauthorized: invalid credentials
 - HTTP 403 Forbidden: missing permissions
+
+## Delete recipients
+
+`DELETE` _**/api/public/v1/recipient**_
+
+Delete multiple recipients by their internal or external ID or by groupId. You can use the `dryRun` flag to test a
+deletion and preview which recipients would be deleted for a given request.
+
+- customerOrGroupId: string - mandatory - customerOrGroupId
+- username: string - mandatory - username
+- password: string - mandatory - password
+- dryRun: boolean - mandatory; defines if the query should only return possibly deleted data (true)
+  or if that data should also be deleted (false)
+- externalId: boolean - mandatory; enables the use of externalIds for deletion
+- recipients: list of objects of the type `RecipientBaseData` - recipients to be deleted
+
+### Delete a single recipient by internal id
+
+#### Example request (dry run)
+
+```json
+{
+  "customerOrGroupId": "500027",
+  "username": "myUserName",
+  "password": "mySuperSecretPwd",
+  "dryRun": true,
+  "externalId": false,
+  "recipients": [
+    {
+      "id": "<UUIDv4>",
+      "externalId": "",
+      "customerId": "500027"
+    }
+  ]
+}
+```
+
+#### Response (dry run)
+
+HTTP 200 OK
+
+```json
+{
+  "result": "OK",
+  "description": "OK",
+  "recipients": [
+    {
+      "id": "<UUIDv4>",
+      "externalId": "",
+      "customerId": "500027",
+      "msisdn": "+436761234567890",
+      "givenname": "John",
+      "surname": "Doe",
+      "email": "john.doe@example.com",
+      "comment": "",
+      "groups": [],
+      "channels": [
+        "SMS",
+        "EMAIL"
+      ]
+    }
+  ],
+  "dryRun": true
+}
+```
+
+### Delete multiple recipients by internal id
+
+#### Example request (dry run)
+
+```json
+{
+  "customerOrGroupId": "500027",
+  "username": "myUserName",
+  "password": "mySuperSecretPwd",
+  "dryRun": true,
+  "externalId": true,
+  "recipients": [
+    {
+      "id": "<UUIDv4>",
+      "externalId": "",
+      "customerId": "500027"
+    },
+    {
+      "id": "<UUIDv4>",
+      "externalId": "",
+      "customerId": "500027"
+    },
+    ...
+  ]
+}
+```
+
+#### Response (dry run)
+
+HTTP 200 OK
+
+```json
+{
+  "result": "OK",
+  "description": "OK",
+  "recipients": [
+    {
+      "id": "<UUIDv4>",
+      "externalId": "",
+      "customerId": "500027",
+      "msisdn": "+436761234567890",
+      "givenname": "John",
+      "surname": "Doe",
+      "email": "john.doe@example.com",
+      "comment": "",
+      "groups": [],
+      "channels": [
+        "SMS",
+        "EMAIL"
+      ]
+    },
+    {
+      "id": "<UUIDv4>",
+      "externalId": "",
+      "customerId": "500027",
+      "msisdn": "+436760987654321",
+      "givenname": "Jane",
+      "surname": "Doe",
+      "email": "jane.doe@example.com",
+      "comment": "",
+      "groups": [],
+      "channels": [
+        "SMS",
+        "EMAIL"
+      ]
+    }
+  ],
+  "dryRun": true
+}
+```
+
+### Delete a single recipient by external id
+
+#### Example request (dry run)
+
+```json
+{
+  "customerOrGroupId": "500027",
+  "username": "myUserName",
+  "password": "mySuperSecretPwd",
+  "dryRun": true,
+  "externalId": true,
+  "recipients": [
+    {
+      "id": "",
+      "externalId": "ABC-123",
+      "customerId": "500027"
+    }
+  ]
+}
+```
+
+#### Response (dry run)
+
+HTTP 200 OK
+
+```json
+{
+  "result": "OK",
+  "description": "OK",
+  "recipients": [
+    {
+      "id": "<UUIDv4>",
+      "externalId": "ABC-123",
+      "customerId": "500027",
+      "msisdn": "+436761234567890",
+      "givenname": "John",
+      "surname": "Doe",
+      "email": "john.doe@example.com",
+      "comment": "",
+      "groups": [],
+      "channels": [
+        "SMS",
+        "EMAIL"
+      ]
+    }
+  ],
+  "dryRun": true
+}
+```
+
+### Delete multiple recipients by the same external id
+
+#### Example request (dry run)
+
+```json
+{
+  "customerOrGroupId": "500",
+  "username": "myUserName",
+  "password": "mySuperSecretPwd",
+  "dryRun": true,
+  "externalId": true,
+  "recipients": [
+    {
+      "id": "",
+      "externalId": "ABC-123",
+      "customerId": "*"
+    }
+  ]
+}
+```
+
+#### Response (dry run)
+
+HTTP 200 OK
+
+```json
+{
+  "result": "OK",
+  "description": "OK",
+  "recipients": [
+    {
+      "id": "<UUIDv4>",
+      "externalId": "ABC-123",
+      "customerId": "500027",
+      "msisdn": "+436761234567890",
+      "givenname": "John",
+      "surname": "Doe",
+      "email": "john.doe@example.com",
+      "comment": "",
+      "groups": [],
+      "channels": [
+        "SMS",
+        "EMAIL"
+      ]
+    },
+    {
+      "id": "<UUIDv4>",
+      "externalId": "ABC-123",
+      "customerId": "500654",
+      "msisdn": "+436761234567890",
+      "givenname": "John",
+      "surname": "Doe",
+      "email": "john.doe@example.com",
+      "comment": "",
+      "groups": [],
+      "channels": [
+        "SMS"
+      ]
+    }
+  ],
+  "dryRun": true
+}
+```
+
+### Errors
+
+If the API user does not have access to all the targeted recipients no recipients will be deleted and the following
+response will be sent:
+
+```json
+{
+  "result": "NOK",
+  "description": "You don't have access to all requested recipients! No recipients were deleted.",
+  "recipients": null,
+  "dryRun": false
+}
+```
