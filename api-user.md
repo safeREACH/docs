@@ -8,7 +8,8 @@
 - v2.3: Rename `customerOrGroupId` to `customerId` in data objects (2020-03-05)
 - v2.4: Add optional `deleteOnlyExternal` flag for import requests (2020-04-09)
 - v2.5: Fix typo: `useExternalId` should be named `externalId` (2020-04-14)
-- v2.6: Add optional `channels` attribute to `PublicRecipientData` to restrict / configure notification channels (2021-10-01)
+- v2.6: Add optional `channels` attribute to `PublicRecipientData` to restrict / configure notification channels (
+  2021-10-01)
 - v2.7: Add documentation for recipient deletion endpoints (2022-04-11)
 
 ## General
@@ -27,23 +28,27 @@ https://api.safereach.com/blaulicht
 
 ### Usage
 
-The API extends the possibility for managing users and groups on the [safeREACH web platform](https://start.safereach.com/).
+The API extends the possibility for managing users and groups on
+the [safeREACH web platform](https://start.safereach.com/).
 
 API requests are limited by the Fair Use Policy.
 
 ### Authentication
 
-For API usage your `customerOrGroupId`, an API user `username` and `password` are needed. Credentials for the user and scenario api cannot be shared.
+For API usage your `customerOrGroupId`, an API user `username` and `password` are needed. Credentials for the user and
+scenario api cannot be shared.
 
 ### Use cases / flags
 
-The purpose of the API is to export recipients and their assigned groups to external data sources for comparison. The identification of a recipient / group is done via an UUID version 4, referenced as `<UUIDv4>`.
+The purpose of the API is to export recipients and their assigned groups to external data sources for comparison. The
+identification of a recipient / group is done via a UUID version 4, referenced as `<UUIDv4>`.
 
 - recipient and group identification via an `externalId` (_VARCHAR(255)_)
 - a `dryRun` flag, which allows data-set comparison and pre-import validation
 - a `partial` flag, which allows partial imports (no deletion of unreferenced elements)
 - a `merge` flag, which allows an initial merge with existing data (makes migration a lot easier)
-- a `deleteOnlyExternal` flag, which will only delete recipients with an externalId if `partial` is `false` and externalIds are used
+- a `deleteOnlyExternal` flag, which will only delete recipients with an externalId if `partial` is `false` and
+  externalIds are used
 
 ### Models
 
@@ -52,7 +57,8 @@ The purpose of the API is to export recipients and their assigned groups to exte
 - id: string - mandatory - `<UUIDv4>` - for new records and for external id usage leave empty
 - externalId: string - optional - for id usage leave empty; mandatory for external id usage
 - customerId: string - mandatory
-- msisdn: string - mandatory - phone number with country code prefix in the [ISO E.164](https://en.wikipedia.org/wiki/E.164) format: `+4366412345678`
+- msisdn: string - mandatory - phone number with country code prefix in
+  the [ISO E.164](https://en.wikipedia.org/wiki/E.164) format: `+4366412345678`
 - givenname: string - mandatory - first name
 - surname: string - mandatory - last name
 - email: string - optional - e-mail address
@@ -86,20 +92,26 @@ The purpose of the API is to export recipients and their assigned groups to exte
 - id: string - mandatory - `<UUIDv4>` - for new records or external id usage leave empty
 - externalId: string - optional - for new records or id usage leave empty
 - customerId: string - mandatory
-- groupId: string - mandatory - group Id - the groupId has to start with a `G` followed by an int between G0 and G999999999 - The groupId can't be changed once it was created - only the name can be updated
-- name: string - mandatory - name of the the group
+- groupId: string - mandatory - group Id - the groupId has to start with a `G` followed by an int between G0 and
+  G999999999 - The groupId can't be changed once it was created - only the name can be updated
+- name: string - mandatory - name of the group
 
 ### Import recipients - JSON
 
 _**/api/public/v1/recipient/import**_
 
-With a HTTP POST request with the header: `Content-Type: application/json` recipients can be imported.
+With an HTTP POST request with the header: `Content-Type: application/json` recipients can be imported.
 
-- dryRun: boolean - optional - default `false`; defines if only a data-set comparison should be made (true) or if data should also be imported (false)
+- dryRun: boolean - optional - default `false`; defines if only a data-set comparison should be made (true) or if data
+  should also be imported (false)
 - externalId: boolean - optional - default `false`; enables the use of externalIds or safeREACH UUIDs
-- partial: boolean - optional - default `false`; defines if records missing in the import data should be deleted from the existing data (false)
-- merge: boolean - optional - default `false`; defines if existing entries should be merged based on the recipients msisdn. The `externalId` is mandatory and will be added to the recipient. Current group assignment will not be deleted, but can be merged with new groups. Also the comment will not be overwritten.
-- deleteOnlyExternal: boolean - optional - default `false`; defines if only recipients with an `externalId` should be considered for deletion
+- partial: boolean - optional - default `false`; defines if records missing in the import data should be deleted from
+  the existing data (false)
+- merge: boolean - optional - default `false`; defines if existing entries should be merged based on the recipients
+  msisdn. The `externalId` is mandatory and will be added to the recipient. Current group assignment will not be
+  deleted, but can be merged with new groups. Also, the comment will not be overwritten.
+- deleteOnlyExternal: boolean - optional - default `false`; defines if only recipients with an `externalId` should be
+  considered for deletion
 - recipients: list of objects of the type `RecipientData` - recipients
 
 #### Example request
@@ -193,7 +205,8 @@ The following errors can occur:
 - HTTP 400 BAD Request: malformed JSON request received
 - HTTP 401 Unauthorized: invalid credentials
 - HTTP 403 Forbidden: missing permissions
-- HTTP 409 Conflict: input data conflicting with current data set; see the description of the response for more information
+- HTTP 409 Conflict: input data conflicting with current data set; see the description of the response for more
+  information
 
 ## Import recipients - CSV
 
@@ -242,7 +255,7 @@ id;externalId;customerId;givenname;surname;msisdn;email;comment;G1;G2;G3
 
 _**/api/public/v1/group/import**_
 
-With a HTTP POST request with the header: `Content-Type: application/json` groups can be imported.
+With an HTTP POST request with the header: `Content-Type: application/json` groups can be imported.
 
 - customerOrGroupId: string - mandatory - customerOrGroupId
 - username: string - mandatory - username
@@ -315,7 +328,8 @@ Following errors can occur:
 - HTTP 400 BAD Request: malformed JSON request received
 - HTTP 401 Unauthorized: invalid credentials
 - HTTP 403 Forbidden: missing permissions
-- HTTP 409 Conflict: input data conflicting with current data set; see the description of the response for more information
+- HTTP 409 Conflict: input data conflicting with current data set; see the description of the response for more
+  information
 
 ## Import groups - CSV
 
