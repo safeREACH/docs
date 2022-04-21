@@ -8,8 +8,8 @@
 - v2.3: Rename `customerOrGroupId` to `customerId` in data objects (2020-03-05)
 - v2.4: Add optional `deleteOnlyExternal` flag for import requests (2020-04-09)
 - v2.5: Fix typo: `useExternalId` should be named `externalId` (2020-04-14)
-- v2.6: Add optional `channels` attribute to `PublicRecipientData` to restrict / configure notification channels (
-  2021-10-01)
+- v2.6: Add optional `channels` attribute to `PublicRecipientData` to restrict / configure notification channels
+(2021-10-01)
 - v2.7: Add documentation for recipient deletion endpoints (2022-04-11)
 
 ## General
