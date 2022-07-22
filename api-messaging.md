@@ -4,6 +4,7 @@
 
 - v1.0: Initial draft (2021-11-25)
 - v1.1: Error response definition and sending mechanism (2022-07-18)
+- v1.2: Replace SAFE_REACH channel name with PUSH (2022-07-22)
 
 ## General
 
@@ -33,9 +34,11 @@ For API usage your `customerId`, an automatic alarm trigger user `username` and 
 
 #### MessageTarget
 
-- channel[]: List of `SMS`, `EMAIL`, `VOICE`, `SAFE_REACH`
+- channel[]: List of `SMS`, `EMAIL`, `VOICE`, `PUSH`
 - msisdn: target phone number (mandatory for `SMS` and `VOICE`)
 - email: target email address (mandatory for `EMAIL`)
+
+> NOTE: PUSH is the channel via you can notify targets in the safeREACH app.
 
 #### Sending mechanism
 
