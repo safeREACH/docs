@@ -5,6 +5,7 @@
 - v1.0: Initial draft (2021-11-25)
 - v1.1: Error response definition and sending mechanism (2022-07-18)
 - v1.2: Replace SAFE_REACH channel name with PUSH (2022-07-22)
+- v1.3: Add new field `type` to `MessageRequest` (2022-07-25)
 
 ## General
 
@@ -73,6 +74,8 @@ _**/api/messaging/v1/send**_
 - password: string - mandatory
 - customerId: string - mandatory
 - message: string - mandatory
+- type: string **(possible values: info, alarm)** - optional (when one of the `MessageTarget` objects has `PUSH` as channel type it
+needs to be specified)
 
 Example:
 
