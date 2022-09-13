@@ -89,7 +89,7 @@ For API usage your `customerOrGroupId`, an automatic alarm trigger user `usernam
 
 **Example:**
 
-```json
+```jsonc
 {
   "scenarioId": "123-ABC-asdfqwerasdf",
   "scenarioConfigId": "123-ABC-asdfqwerasdf-CONFIG",
@@ -100,7 +100,7 @@ For API usage your `customerOrGroupId`, an automatic alarm trigger user `usernam
   "startDate": "2018-12-13T14:56:53.016Z",
   "endDate": null,
   "alarms": [
-    AlarmData
+    // <AlarmData>
   ]
 }
 ```
@@ -123,7 +123,7 @@ For API usage your `customerOrGroupId`, an automatic alarm trigger user `usernam
 ```jsonc
 // RecipientConfiguration where the target is a group
 {
-  "type": "GROUP"
+  "type": "GROUP",
   "target": "G1"
 }
 ```
@@ -158,12 +158,12 @@ Example:
 
 HTTP 200 OK
 
-```json
+```jsonc
 {
   "result": "OK",
-  "descirption": "",
+  "description": "",
   "configs": [
-    <ScenarioConfigData>
+    // <ScenarioConfigData>
   ]
 }
 ```
@@ -213,7 +213,7 @@ HTTP 200 OK
 ```json
 {
   "result": "OK",
-  "descirption": "",
+  "description": "",
   "scenarioId": "123-ABC-asdfqwerasdf"
 }
 ```
@@ -234,7 +234,7 @@ _**/api/alarm/v1/scenario/trigger/code**_
 - username: string - mandatory
 - password: string - mandatory
 - customerId: string - mandatory
-- scenarioConfigId: string - mandatory
+- code: string - mandatory
 - additionalText: string - optional
 - additionalRecipients: RecipientConfiguration[] - optional
 
@@ -263,7 +263,7 @@ HTTP 200 OK
 ```json
 {
   "result": "OK",
-  "descirption": "",
+  "description": "",
   "scenarioId": "123-ABC-asdfqwerasdf"
 }
 ```
@@ -301,12 +301,12 @@ _**/api/alarm/v1/scenario/query**_
 
 HTTP 200 OK
 
-```json
+```jsonc
 {
   "result": "OK",
-  "descirption": "",
+  "description": "",
   "scenarioData": {
-    ScenarioData
+    // <ScenarioData>
   }
 }
 ```
@@ -349,17 +349,17 @@ _**/api/alarm/v1/scenario/list**_
 
 HTTP 200 OK
 
-```json
+```jsonc
 {
   "result": "OK",
-  "descirption": "",
+  "description": "",
   "startedOrEndedAfter": "2020-10-12T09:18:53.740Z",
   "startedOrEndedBefore": "2020-10-12T09:48:54.068Z",
   "scenarioConfigIds": [
     "0123-ABC-asdfqwerasdf"
   ],
   "scenarioPreviews": {
-    <ScenarioPreviewData>
+    // <ScenarioPreviewData>
   }
 }
 ```
