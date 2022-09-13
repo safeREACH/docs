@@ -8,6 +8,7 @@
 - v1.3: Added new scenario list endpoint with `cutOff` and `configId` filters (2020-10-12)
 - v1.4: Added Trigger by scenario code endpoint (2021-10-12)
 - v1.5: Added `additionalRecipients` attribute to trigger requests (2021-11-08)
+- v1.6: Fixed typos and formatting (2022-09-13)
 
 ## General
 
