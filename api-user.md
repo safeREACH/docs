@@ -11,6 +11,7 @@
 - v2.6: Add optional `channels` attribute to `PublicRecipientData` to restrict / configure notification channels
 (2021-10-01)
 - v2.7: Add documentation for recipient deletion endpoints (2022-04-11)
+- v2.8: Add unique constraint for msisdns and email addresses (2022-10-18)
 
 ## General
 
@@ -58,10 +59,10 @@ identification of a recipient / group is done via a UUID version 4, referenced a
 - externalId: string - optional - for id usage leave empty; mandatory for external id usage
 - customerId: string - mandatory
 - msisdn: string - mandatory - phone number with country code prefix in
-  the [ISO E.164](https://en.wikipedia.org/wiki/E.164) format: `+4366412345678`
+  the [ISO E.164](https://en.wikipedia.org/wiki/E.164) format: `+4366412345678` - has to be unique across all recipients (including existing ones)
 - givenname: string - mandatory - first name
 - surname: string - mandatory - last name
-- email: string - optional - e-mail address
+- email: string - optional - e-mail address, has to be unique across all recipients (including existing ones)
 - comment: string- optional - e.g. division in organisation or other additional information
 - groups: list of objects of the type `RecipientGroupParticipationData` - mandatory can be an empty list
 - channels: list of `Channel` - optional - restricted / configured notification channels
@@ -234,8 +235,8 @@ The following columns have to be separated by `;`
 - customerId: string - mandatory
 - givenname: string - mandatory
 - surname: string - mandatory
-- msisdn: string - mandatory
-- email: string - optional
+- msisdn: string - mandatory - has to be unique across all recipients (including existing ones)
+- email: string - optional - has to be unique across all recipients (including existing ones)
 - comment: string - optional - e.g. division ()
 
 After "comment" group participation is listed by `groupId`.
