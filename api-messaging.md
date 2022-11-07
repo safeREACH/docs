@@ -7,6 +7,7 @@
 - v1.2: Replace SAFE_REACH channel name with PUSH (2022-07-22)
 - v1.3: Add new field `type` to `MessageRequest` (2022-07-25)
 - v1.4: Add new field `title` to `MessageRequest` (2022-07-25)
+- v1.5: Add new field `language` to `MessageRequest` (2022-11-07)
 
 ## General
 
@@ -79,6 +80,9 @@ _**/api/messaging/v1/send**_
 needs to be specified)
 - title: string - optional (when at least one of the `MessageTarget` objects has `PUSH` as channel type it
   needs to be specified)
+- language: enum - optional (valid values are: en, de, fr, it)
+
+`NOTE:` The language property is *optional*. If it is not set, the language for the given customer is used. 
 
 Example:
 
@@ -88,6 +92,7 @@ Example:
   "password": "mySuperSecretPwd",
   "customerId": "500027",
   "message": "Hello\n\nYou got some✉️",
+  "language": "en",
   "targets": [
     MessageTarget
   ]
