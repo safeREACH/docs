@@ -8,6 +8,7 @@
 - v1.3: Add new field `type` to `MessageRequest` (2022-07-25)
 - v1.4: Add new field `title` to `MessageRequest` (2022-07-25)
 - v1.5: Add new field `language` to `MessageRequest` (2022-11-07)
+- v1.6: Remove `fr`, and `it` from `language` option and add additional information for `language` field (2022-11-28)
 
 ## General
 
@@ -80,9 +81,11 @@ _**/api/messaging/v1/send**_
 needs to be specified)
 - title: string - optional (when at least one of the `MessageTarget` objects has `PUSH` as channel type it
   needs to be specified)
-- language: enum - optional (valid values are: en, de, fr, it)
+- language: enum - optional (valid values are: en, de)
 
-`NOTE:` The language property is *optional*. If it is not set, the language for the given customer is used. 
+`NOTE:` The language property is *optional*. If it is not set, the language for the given customer is used. The current
+version can only be used properly, if the specified targets are added in the safeREACH platform. Other than that, it is 
+sufficient to specify `PUSH` as channel.
 
 Example:
 
