@@ -94,7 +94,7 @@ identification of a recipient / group is done via a UUID version 4, referenced a
 - externalId: string - optional - for new records or id usage leave empty
 - customerId: string - mandatory
 - groupId: string - mandatory - group Id - the groupId has to start with a `G` followed by an int between G0 and
-  G999999999 - The groupId can't be changed once it was created - only the name can be updated
+  G999999 - The groupId can't be changed once it was created - only the name can be updated
 - name: string - mandatory - name of the group
 
 ### Import recipients - JSON
