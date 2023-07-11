@@ -12,6 +12,7 @@
 (2021-10-01)
 - v2.7: Add documentation for recipient deletion endpoints (2022-04-11)
 - v2.8: Add unique constraint for msisdns and email addresses (2022-10-18)
+- v2.9: Add `recipientsToDelete` and `groupsToDelete` for explicit deletion of users (2023-07-11)
 
 ## General
 
@@ -50,6 +51,8 @@ identification of a recipient / group is done via a UUID version 4, referenced a
 - a `merge` flag, which allows an initial merge with existing data (makes migration a lot easier)
 - a `deleteOnlyExternal` flag, which will only delete recipients with an externalId if `partial` is `false` and
   externalIds are used
+- a `recipientsToDelete` list of users `external ids` to delete
+- a `groupsToDelete` list of `groups` to delete
 
 ### Models
 
@@ -114,6 +117,8 @@ With an HTTP POST request with the header: `Content-Type: application/json` reci
 - deleteOnlyExternal: boolean - optional - default `false`; defines if only recipients with an `externalId` should be
   considered for deletion
 - recipients: list of objects of the type `RecipientData` - recipients
+- recipientsToDelete: list of strings (list of `externalId`) - optional - default `null` - only working when `partial` is `true` and `merge` is `false`
+- groupsToDelete: list of strings (list of `groupId` - see description of `groupId` above in `GroupData`) - optional - default `null` - only working when `partial` is `true` and `merge` is `false`
 
 #### Example request
 
