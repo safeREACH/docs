@@ -9,6 +9,7 @@
 - v1.4: Add new field `title` to `MessageRequest` (2022-07-25)
 - v1.5: Add new field `language` to `MessageRequest` (2022-11-07)
 - v1.6: Remove `fr`, and `it` from `language` option and add additional information for `language` field (2022-11-28)
+- v1.7: Add properties for voice calls, `retries`, `timeout`, `delay` (2023-07-13)
 
 ## General
 
@@ -82,6 +83,9 @@ needs to be specified)
 - title: string - optional (when at least one of the `MessageTarget` objects has `PUSH` as channel type it
   needs to be specified)
 - language: enum - optional (valid values are: en, de)
+- retries: number - optional, default is 2 (number of retries if user does not answer voice call)
+- timeout: number (in seconds) - optional, default is 60 seconds (number of seconds to wait until user answer voice call)
+- delay: number (in seconds) - optional, default is 300 seconds (number of seconds to wait until the retry voice call is made)
 
 `NOTE:` The language property is *optional*. If it is not set, the language for the given customer is used. The current
 version can only be used properly, if the specified targets are added in the safeREACH platform. Other than that, it is 
