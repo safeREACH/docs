@@ -17,7 +17,7 @@
 
 > Send individual messages via VOICE, SMS, EMAIL or PUSH
 
-* REST API reference
+* REST API reference: [Messaging API](./api-messaging.md)
 
 ## Custom Integrations
 
