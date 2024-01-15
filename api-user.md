@@ -13,6 +13,7 @@
 - v2.7: Add documentation for recipient deletion endpoints (2022-04-11)
 - v2.8: Add unique constraint for msisdns and email addresses (2022-10-18)
 - v2.9: Add `recipientsToDelete` and `groupsToDelete` for explicit deletion of users (2023-07-11)
+- v2.10: Add `functions` to recipient import and `functions` import (2024-01-15)
 
 ## General
 
@@ -69,6 +70,7 @@ identification of a recipient / group is done via a UUID version 4, referenced a
 - comment: string- optional - e.g. division in organisation or other additional information
 - groups: list of objects of the type `RecipientGroupParticipationData` - mandatory can be an empty list
 - channels: list of `Channel` - optional - restricted / configured notification channels
+- functions: list of objects of type `FunctionParticipationData` - optional (by default null)
 
 #### RecipientBaseData
 
@@ -79,6 +81,10 @@ identification of a recipient / group is done via a UUID version 4, referenced a
 #### RecipientGroupParticipationData
 
 - groupId: string - mandatory e.g. "G1"
+
+#### FunctionParticipationData
+
+- functionCode: string - mandatory e.g. "F1"
 
 #### Channel
 
@@ -99,6 +105,15 @@ identification of a recipient / group is done via a UUID version 4, referenced a
 - groupId: string - mandatory - group Id - the groupId has to start with a `G` followed by an int between G0 and
   G999999 - The groupId can't be changed once it was created - only the name can be updated
 - name: string - mandatory - name of the group
+
+#### FunctionData
+
+- id: string - mandatory - `<UUIDv4>` - for new records or external id usage leave empty
+- externalId: string - optional - for new records or id usage leave empty
+- customerId: string - optional
+- functionCode: string  - mandatory - the functionCode has to start with a `F` followed by an int between F0 and
+  F999999 - The functionCode can't be changed once it was created - only the name can be updated
+- name: string - mandatory
 
 ### Import recipients - JSON
 
@@ -147,6 +162,14 @@ With an HTTP POST request with the header: `Content-Type: application/json` reci
         },
         {
           "groupId": "G2"
+        }
+      ],
+      "functions": [
+        {
+          "functionCode": "F1"
+        },
+        {
+          "functionCode": "F2"
         }
       ]
     },
@@ -371,6 +394,87 @@ id;exteranlId;customerId;groupId;name
 <UUIDv4>;externalId;500027;G2;Stiller Alar
 <UUIDv4>;externalId;500027;G3;Alle Kameraden
 ```
+
+## Import functions - JSON
+
+_**/api/public/v1/functions/{customerId}/import**_
+
+With an HTTP POST request with the header `Content-Type: application/json` functions can be imported.
+
+- customerOrGroupId: string - mandatory - customerOrGroupId
+- username: string - mandatory - username
+- password: string - mandatory - password
+- dryRun: boolean - optional - default `false`
+- externalId: boolean - optional - default `false`
+- partial: boolean - optional - default `false`
+- functions: List of objects of type FunctionData - groups
+
+#### Example request
+
+```json
+{
+  "customerOrGroupId": "500027",
+  "username": "import",
+  "password": "mySuperSecretPwd",
+  "dryRun": true,
+  "externalId": false,
+  "partial": false,
+  "merge": false,
+  "functions": [
+    {
+      "id": "<UUIDv4>",
+      "externalId": "",
+      "customerId": "500027",
+      "functionCode": "F1",
+      "name": "Management"
+    },
+    {
+      "id": "<UUIDv4>",
+      "externalId": "",
+      "customerId": "500027",
+      "groupId": "F2",
+      "name": "Crises"
+    },
+    {
+      "id": "<UUIDv4>",
+      "externalId": "",
+      "customerId": "500027",
+      "groupId": "F3",
+      "name": "IT"
+    }
+  ]
+}
+```
+
+#### Response
+
+HTTP 200 OK
+
+```json
+{
+  "result": "OK",
+  "description": null,
+  "created": 3,
+  "updated": 0,
+  "deleted": 0,
+  "merged": 0,
+  "request": {
+    "dryRun": true,
+    "externalId": false,
+    "partial": false,
+    "merge": false
+  }
+}
+```
+
+Following errors can occur:
+
+- HTTP 400 BAD Request: malformed JSON request received
+- HTTP 401 Unauthorized: invalid credentials
+- HTTP 403 Forbidden: missing permissions
+- HTTP 409 Conflict: input data conflicting with current data set; see the description of the response for more
+  information
+
 
 ## Export recipients - CSV / JSON
 
