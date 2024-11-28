@@ -9,6 +9,7 @@
 - v1.4: Added Trigger by scenario code endpoint (2021-10-12)
 - v1.5: Added `additionalRecipients` attribute to trigger requests (2021-11-08)
 - v1.6: Fixed typos and formatting (2022-09-13)
+- v1.7: Added support for terminating alarm / info and sending updates to active alarms / infos (2024-11-28)
 
 ## General
 
@@ -129,6 +130,13 @@ For API usage your `customerOrGroupId`, an automatic alarm trigger user `usernam
 }
 ```
 
+#### EndAlarmType
+
+- one of: `SILENT`, `LOUD`
+- defines the sound of the notification when an alarm / info is terminated
+
+`SILENT`: a simple notification sound (similar to receiving a text message)  
+`LOUD`: continues ringing for a specific amount of time (the duration of one soundtrack)
 
 ## List scenario configurations
 
@@ -266,6 +274,90 @@ HTTP 200 OK
   "result": "OK",
   "description": "",
   "scenarioId": "123-ABC-asdfqwerasdf"
+}
+```
+
+The following errors can occur:
+
+- HTTP 400 BAD Request: malformed JSON request received
+- HTTP 401 Unauthorized: invalid credentials
+- HTTP 403 Forbidden: missing permissions
+
+## Send updates to active scenario
+
+_**/api/alarm/v1/scenario/{scenarioId}/updates**_
+
+**Method:** PATCH    
+**Path Variable:** scenarioId - can be extracted from the response of triggering a scenario    
+**Header:** `Content-Type: application/json`
+
+- username: string - mandatory
+- password: string - mandatory
+- customerId: string - mandatory
+- text: string - mandatory
+
+#### Example request
+
+```json
+{
+  "username": "myUser",
+  "password": "mySuperSecretPwd",
+  "customerId": "500027",
+  "text": "Fire detected near warehouse. Please evacuate."
+}
+```
+
+#### Response
+
+HTTP 200 OK
+
+```json
+{
+  "result": "OK",
+  "description": ""
+}
+```
+
+The following errors can occur:
+
+- HTTP 400 BAD Request: malformed JSON request received
+- HTTP 401 Unauthorized: invalid credentials
+- HTTP 403 Forbidden: missing permissions
+
+## Terminate scenario
+
+_**/api/alarm/v1/scenario/{scenarioId}**_
+
+**Method:** POST    
+**Path Variable:** scenarioId - can be extracted from the response of triggering a scenario    
+**Header:** `Content-Type: application/json`
+
+- username: string - mandatory
+- password: string - mandatory
+- customerId: string - mandatory
+- terminationMessage: string - optional (gives recipients more information on why the alarm / info is terminated)
+- endAlarmType: EndAlarmType - optional (default: SILENT)
+
+#### Example request
+
+```json
+{
+  "username": "myUser",
+  "password": "mySuperSecretPwd",
+  "customerId": "500027",
+  "terminationMessage": "Incident resolved. No further action needed.",
+  "endAlarmType": "LOUD"
+}
+```
+
+#### Response
+
+HTTP 200 OK
+
+```json
+{
+  "result": "OK",
+  "description": ""
 }
 ```
 
