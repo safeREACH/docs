@@ -328,7 +328,7 @@ The following errors can occur:
 
 _**/api/alarm/v1/scenario/{scenarioId}**_
 
-**Method:** POST    
+**Method:** PATCH    
 **Path Variable:** scenarioId - can be extracted from the response of triggering a scenario    
 **Header:** `Content-Type: application/json`
 
