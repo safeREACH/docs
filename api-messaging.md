@@ -17,10 +17,6 @@
 
 UTF-8 encoding shall be used at all times.
 
-### Staging base URL
-
-https://api-staging.safereach.com/blaulicht
-
 ### Live base URL
 
 https://api.safereach.com/blaulicht
