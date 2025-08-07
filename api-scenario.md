@@ -380,7 +380,8 @@ HTTP 200 OK
 ### ✉️ Send Update to an Active Scenario
 
 **POST** `/api/alarm/v1/scenario/{scenarioId}/updates`
-**Path Variable:** scenarioId - can be extracted from the response when triggering by [scenario config id](#trigger-by-scenario-config-id) or [scenario code](#trigger-by-scenario-code), alternatively, can be obtained when [listing scenarios](#list-scenarios).
+
+**Path Variable:** `{scenarioId}` - can be extracted from the response when triggering by [scenario config id](#-trigger-by-scenario-config-id) or [scenario code](#-trigger-by-scenario-code), alternatively, can be obtained when [listing scenarios](#-list-scenarios).
 
 **Parameters:**
 
@@ -421,7 +422,8 @@ HTTP 200 OK
 ### 🛑 Terminate Scenario
 
 **PATCH** `/api/alarm/v1/scenario/{scenarioId}`
-**Path Variable:** scenarioId - can be extracted from the response when triggering by [scenario config id](#trigger-by-scenario-config-id) or [scenario code](#trigger-by-scenario-code), alternatively, can be obtained when [listing scenarios](#list-scenarios). 
+
+**Path Variable:** `{scenarioId}` - can be extracted from the response when triggering by [scenario config id](#-trigger-by-scenario-config-id) or [scenario code](#-trigger-by-scenario-code), alternatively, can be obtained when [listing scenarios](#-list-scenarios).
 
 **Parameters:**
 
