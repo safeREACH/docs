@@ -58,6 +58,28 @@ All requests and responses must use **UTF-8** encoding.
 
 ---
 
+## 🎯 Purpose & Use Cases
+
+The **Scenario API** is designed to provide **programmatic access** to the scenario-based alerting capabilities of the safeREACH platform. While scenarios can typically be triggered manually through the safeREACH web interface or mobile apps, this API extends those capabilities by enabling automated and ad hoc interaction with scenarios.
+
+### Key Use Cases
+
+- **Automated Scenario Triggering**  
+  Integrate with internal systems (e.g., monitoring, facility management, emergency response platforms) to trigger predefined scenarios automatically when certain conditions are met.
+
+- **Dynamic Recipient Assignment**  
+  Add or override recipients on the fly using the `additionalRecipients` parameter, allowing flexibility depending on the current operational context.
+
+- **Custom User Messages**  
+  Attach contextual information to alerts via the `additionalText` field to better inform recipients during critical events.
+
+- **Centralized Orchestration**  
+  Use the API to build your own alert management dashboard or integrate scenario control into existing IT or crisis management systems.
+
+- **Programmatic Termination and Updates**  
+  Send follow-up updates or terminate scenarios based on external signals (e.g., incident resolved, escalation completed).
+
+---
 
 ## 🧱 Models
 
@@ -149,7 +171,7 @@ All endpoints use `Content-Type: application/json` and UTF-8 encoding.
 | scenarioConfigIds  | List<string>    | No       |         | Filter for specific scenario configurations          |
 
 
-#### Example
+**Example**
 
 Request:
 
@@ -204,7 +226,7 @@ The value of `startedOrEndedBefore` can be used as `startedOrEndedAfter` for the
 | scenarioId  | string | Yes      | –       | Scenario ID     |
 
 
-#### Example
+**Example**
 
 Request:
 
@@ -247,7 +269,7 @@ HTTP 200 OK
 | customerIds  | List<string> | Yes      | –       | List of customer IDs               |
 
 
-#### Example
+**Example**
 
 Request:
 
@@ -293,7 +315,7 @@ HTTP 200 OK
 | additionalRecipients | List<RecipientConfiguration> | No |         | Additional recipients to be alerted     |
 
 
-#### Example
+**Example**
 
 Request:
 
@@ -343,7 +365,7 @@ HTTP 200 OK
 | additionalRecipients | List<RecipientConfiguration> | No |         | Additional recipients to be alerted     |
 
 
-#### Example
+**Example**
 
 Request:
 
@@ -381,7 +403,7 @@ HTTP 200 OK
 
 **POST** `/api/alarm/v1/scenario/{scenarioId}/updates`
 
-**Path Variable:** `{scenarioId}` - can be extracted from the response when triggering by [scenario config id](#-trigger-by-scenario-config-id) or [scenario code](#-trigger-by-scenario-code), alternatively, can be obtained when [listing scenarios](#-list-scenarios).
+**Path Variable:** `{scenarioId} - can be extracted from the response when triggering by [scenario config id](#-trigger-by-scenario-config-id) or [scenario code](#-trigger-by-scenario-code), alternatively, can be obtained when [listing scenarios](#-list-scenarios).
 
 **Parameters:**
 
@@ -393,7 +415,7 @@ HTTP 200 OK
 | text        | string | Yes      | –       | Update message text         |
 
 
-#### Example
+**Example**
 
 Request:
 
@@ -436,7 +458,7 @@ HTTP 200 OK
 | endAlarmType       | EndAlarmType | No       | SILENT  | Type of sound played when alarm is terminated |
 
 
-#### Example
+**Example**
 
 Request:
 
