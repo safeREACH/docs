@@ -1,11 +1,15 @@
 # 📲 Scenario Text Message API
 
-## Version History
+<details>
+	<summary>## Version History</summary>
+
 
 | Version | Date | Changes |
 | --- | --- | --- |
 | v1.0 | 2021-09-27 | Initial draft |
 | v1.1 | 2025-08-08 | Reworked structure and fixed some wordings. |
+
+</details>
 
 ---
 
