@@ -147,7 +147,7 @@ All requests and responses use **UTF-8** encoding.
 
 ## 📥 Import Recipients — JSON
 
-### `POST /api/public/v1/recipient/import`
+**`POST /api/public/v1/recipient/import`**
 
 | Parameter | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
@@ -160,7 +160,9 @@ All requests and responses use **UTF-8** encoding.
 | `groupsToDelete` | List | Optional | null | List of `groupId`s |
 | `recipients` | List | ✅ Yes | — | List of `RecipientData` objects |
 
-### Example Request
+**Example**
+
+Request:
 
 ```json
 {
@@ -191,7 +193,7 @@ All requests and responses use **UTF-8** encoding.
 }
 ```
 
-### Example Response
+Response:
 
 ```json
 {
@@ -211,16 +213,16 @@ All requests and responses use **UTF-8** encoding.
 
 ## 📤 Export Recipients / Groups
 
-### `GET /api/public/v1/recipient/{customerOrGroupId}/export`
+**`GET /api/public/v1/recipient/{customerOrGroupId}/export`**
 
-### `GET /api/public/v1/group/{customerOrGroupId}/export`
+**`GET /api/public/v1/group/{customerOrGroupId}/export`**
 
 **Headers**:
 
 - `X-Username`, `X-Password`
 - `Accept`: `application/json` or `text/csv`
 
-### JSON Example
+**JSON Example**
 
 ```json
 {
@@ -229,7 +231,7 @@ All requests and responses use **UTF-8** encoding.
 }
 ```
 
-### CSV Example
+**CSV Example**
 
 ```csv
 id;externalId;customerId;givenname;surname;msisdn;email;comment;G1;G2
@@ -240,7 +242,7 @@ UUIDv4;;500027;Jane;Doe;+4366412345678;jane@example.com;;1;0
 
 ## 🧼 Delete Recipients
 
-### `DELETE /api/public/v1/recipient`
+**`DELETE /api/public/v1/recipient`**
 
 **Request Body**:
 
@@ -250,7 +252,9 @@ UUIDv4;;500027;Jane;Doe;+4366412345678;jane@example.com;;1;0
 | `externalId` | ✅ Yes | Use externalId matching |
 | `recipients` | ✅ Yes | List of `RecipientBaseData` |
 
-### Example Request
+**Example**
+
+Request:
 
 ```json
 {
@@ -265,7 +269,7 @@ UUIDv4;;500027;Jane;Doe;+4366412345678;jane@example.com;;1;0
 }
 ```
 
-### Example Response
+Response:
 
 ```json
 {
@@ -285,9 +289,9 @@ UUIDv4;;500027;Jane;Doe;+4366412345678;jane@example.com;;1;0
 
 ## 📥 Import Groups / Functions
 
-### `POST /api/public/v1/group/import`
+**`POST /api/public/v1/group/import`**
 
-### `POST /api/public/v1/functions/{customerId}/import`
+**`POST /api/public/v1/functions/{customerId}/import`**
 
 - Accepts same flags as `/recipient/import`
 - `groups` and `functions` are lists of `GroupData` / `FunctionData`
@@ -301,7 +305,7 @@ UUIDv4;;500027;Jane;Doe;+4366412345678;jane@example.com;;1;0
 - Use `;` as separator
 - `1` = member of group, `0` = not member
 
-### CSV example for recipients:
+**CSV example for recipients:**
 
 ```csv
 id;externalId;customerId;givenname;surname;msisdn;email;comment;G1;G2
@@ -323,7 +327,7 @@ id;externalId;customerId;givenname;surname;msisdn;email;comment;G1;G2
 
 All endpoints in the User API respond with standardized HTTP status codes and JSON-formatted error messages. This section outlines possible errors, their causes, and how to resolve them.
 
-### 🔒 Authentication & Authorization Errors
+### Authentication & Authorization Errors
 
 | Status Code | Meaning | Cause | Resolution |
 | --- | --- | --- | --- |
@@ -332,7 +336,7 @@ All endpoints in the User API respond with standardized HTTP status codes and JS
 
 ---
 
-### 📤 Request Errors
+### Request Errors
 
 | Status Code | Meaning | Cause | Resolution |
 | --- | --- | --- | --- |
@@ -341,7 +345,7 @@ All endpoints in the User API respond with standardized HTTP status codes and JS
 
 ---
 
-### 🧪 Dry Run-Specific Response
+### Dry Run-Specific Response
 
 During dry runs (`"dryRun": true`), responses will include a list of recipients or groups that **would be created, updated, or deleted**, but **no actual changes are performed**.
 
@@ -349,14 +353,16 @@ If the `dryRun` flag is omitted or `false`, changes are **committed** and the re
 
 ---
 
-### 🧨 Deletion Errors
+### Deletion Errors
 
 | Status Code | Meaning | Cause | Resolution |
 | --- | --- | --- | --- |
 | `403 Forbidden` | Partial access for deletion | User does not have access to all recipients or groups targeted in a bulk deletion. | Restrict deletions to recipients within the allowed `customerOrGroupId`. |
 | `409 Conflict` | Cannot delete referenced data | Attempt to delete a group or function still referenced by active users. | Remove user associations first, or use the import options for safe deletion. |
 
-### Example Error Response (Unauthorized)
+### Examples
+
+**Error Response (Unauthorized)**
 
 ```json
 {
@@ -365,7 +371,7 @@ If the `dryRun` flag is omitted or `false`, changes are **committed** and the re
 }
 ```
 
-### Example Error Response (Forbidden)
+**Error Response (Forbidden)**
 
 ```json
 {
@@ -375,7 +381,7 @@ If the `dryRun` flag is omitted or `false`, changes are **committed** and the re
   "dryRun": false}
 ```
 
-### Example Error Response (Conflict)
+**Error Response (Conflict)**
 
 ```json
 {
