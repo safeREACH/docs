@@ -69,12 +69,6 @@ If you're unsure, ask support which region your account is in.
 
 ---
 
-## 🧾 Encoding
-
-All requests and responses use **UTF-8** encoding.
-
----
-
 ## 📦 Data Models
 
 ### RecipientData
@@ -145,7 +139,13 @@ All requests and responses use **UTF-8** encoding.
 
 ---
 
-## 📥 Import Recipients — JSON
+## 🔌 Endpoints
+
+All endpoints use `Content-Type: application/json` and UTF-8 encoding.
+
+---
+
+### Import Recipients — JSON
 
 **`POST /api/public/v1/recipient/import`**
 
@@ -211,7 +211,7 @@ Response:
 
 ---
 
-## 📤 Export Recipients / Groups
+### Export Recipients / Groups
 
 **`GET /api/public/v1/recipient/{customerOrGroupId}/export`**
 
@@ -240,7 +240,7 @@ UUIDv4;;500027;Jane;Doe;+4366412345678;jane@example.com;;1;0
 
 ---
 
-## 🧼 Delete Recipients
+### Delete Recipients
 
 **`DELETE /api/public/v1/recipient`**
 
@@ -287,7 +287,7 @@ Response:
 
 ---
 
-## 📥 Import Groups / Functions
+### Import Groups / Functions
 
 **`POST /api/public/v1/group/import`**
 
@@ -298,7 +298,7 @@ Response:
 
 ---
 
-## 📤 CSV Import (Recipients or Groups)
+### CSV Import (Recipients or Groups)
 
 - `Content-Type: text/csv`
 - `X-CustomerId`, `X-Username`, `X-Password` headers

@@ -13,7 +13,9 @@
 - **v1.8**: Reworked structure. Added data center location Vienna. Fixed some wordings and typos.
 ---
 
-## 🛠️ Prerequisites
+## 🎯 Purpose & Access
+
+The **Scenario API** is designed to provide **programmatic access** to the scenario-based alerting capabilities of the safeREACH platform. While scenarios can typically be triggered manually through the safeREACH web interface or mobile apps, this API extends those capabilities by enabling automated and ad hoc interaction with scenarios.
 
 To access the Scenario API, ensure the following:
 
@@ -31,7 +33,7 @@ Scenario API access **requires credentials issued by the safeREACH Support Team*
 
 ---
 
-### 🌍 Data Center Selection
+### 🌐 Data Center Selection
 | Region   | Base URL                                |
 |----------|------------------------------------------|
 | Frankfurt| `https://api.safereach.com/blaulicht`    |
@@ -41,7 +43,7 @@ If you're unsure, ask support which region your account is in.
 
 ---
 
-### ⚖️ Fair Use & Rate Limits
+### Fair Use & Rate Limits
 
 API usage is subject to:
 
@@ -52,15 +54,6 @@ Contact support if you anticipate high traffic or require an increase in limits.
 
 ---
 
-### 🧾 Encoding
-
-All requests and responses must use **UTF-8** encoding.
-
----
-
-## 🎯 Purpose & Use Cases
-
-The **Scenario API** is designed to provide **programmatic access** to the scenario-based alerting capabilities of the safeREACH platform. While scenarios can typically be triggered manually through the safeREACH web interface or mobile apps, this API extends those capabilities by enabling automated and ad hoc interaction with scenarios.
 
 ### Key Use Cases
 
@@ -156,7 +149,7 @@ All endpoints use `Content-Type: application/json` and UTF-8 encoding.
 
 ---
 
-### 📜 List Scenarios
+### List Scenarios
 
 **POST** `/api/alarm/v1/scenario/list`
 
@@ -212,7 +205,7 @@ The value of `startedOrEndedBefore` can be used as `startedOrEndedAfter` for the
 
 ---
 
-### 🔍 Query a Scenario
+### Query a Scenario
 
 **POST** `/api/alarm/v1/scenario/query`
 
@@ -256,7 +249,7 @@ HTTP 200 OK
 ---
 
 
-### 📄 List Scenario Configurations
+### List Scenario Configurations
 
 **POST** `/api/alarm/v1/scenario/config/list`
 
@@ -299,7 +292,7 @@ HTTP 200 OK
 
 ---
 
-### 🚨 Trigger by Scenario Config ID
+### Trigger by Scenario Config ID
 
 **POST** `/api/alarm/v1/scenario/trigger`
 
@@ -349,7 +342,7 @@ HTTP 200 OK
 
 ---
 
-### 🚨 Trigger by Scenario Code
+### Trigger by Scenario Code
 
 **POST** `/api/alarm/v1/scenario/trigger/code`
 
@@ -399,7 +392,7 @@ HTTP 200 OK
 
 ---
 
-### ✉️ Send Update to an Active Scenario
+### Send Update to an Active Scenario
 
 **POST** `/api/alarm/v1/scenario/{scenarioId}/updates`
 
@@ -441,7 +434,7 @@ HTTP 200 OK
 
 ---
 
-### 🛑 Terminate Scenario
+### Terminate Scenario
 
 **PATCH** `/api/alarm/v1/scenario/{scenarioId}`
 
