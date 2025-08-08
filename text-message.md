@@ -1,7 +1,7 @@
 # 📲 Scenario Text Message API
 
 <details>
-	<summary><h2> Version History</h2></summary>
+	<summary><h2>🧩 Version History</h2></summary>
 
 
 | Version | Date | Changes |

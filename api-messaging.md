@@ -1,6 +1,7 @@
 # 📘 Messaging API Documentation
 
-## 🧩 Version History
+<details>
+  <summary><h2>🧩 Version History</h2></summary>
 
 | Version | Date | Changes |
 | --- | --- | --- |
@@ -13,6 +14,8 @@
 | v1.6 | 2022-11-28 | Removed `fr`, `it` from allowed languages; clarified usage of `language` |
 | v1.7 | 2023-07-13 | Added `retries`, `timeout`, and `delay` for voice calls |
 | v1.8 | 2025-08-08 | Reworked structure and fixed wordings. |
+
+</details>
 
 ---
 

@@ -1,6 +1,7 @@
 # 📘 Scenario API Documentation
 
-## 🧩 Version History
+<details>
+  <summary><h2>🧩 Version History</h2></summary>
 
 - **v1.0**: Initial draft (2017-02-19)
 - **v1.1**: Added `additionalText` property (2018-12-14)
@@ -11,6 +12,9 @@
 - **v1.6**: Fixed typos and formatting (2022-09-13)
 - **v1.7**: Added support for terminating alarms and sending updates to active scenarios (2024-11-28)
 - **v1.8**: Reworked structure. Added data center location Vienna. Fixed some wordings and typos. (2025-08-07)
+
+</details>
+
 ---
 
 ## 🎯 Purpose & Access

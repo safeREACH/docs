@@ -1,6 +1,7 @@
 # 📘 User API Documentation
 
-## 🧩 Version History
+<details>
+  <summary><h2>🧩 Version History</h2></summary>
 
 - **v2.0**: Initial Draft (2018-09-30)
 - **v2.1**: Small API adjustments (2019-03-01)
@@ -14,6 +15,8 @@
 - **v2.9**: Add `recipientsToDelete` and `groupsToDelete` (2023-07-11)
 - **v2.10**: Add `functions` to recipient import (2024-01-15)
 - **v2.11**: Rewrite and restructuring (2025-08-07)
+
+</details>
 
 ---
 
