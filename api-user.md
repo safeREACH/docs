@@ -27,7 +27,7 @@ All endpoints of the User API require authentication using a **dedicated admin a
 
 Depending on the type of endpoint, authentication credentials must be provided either in the **HTTP request body** or via **HTTP headers**:
 
-#### 1. JSON-based endpoints (e.g., recipient or group import via JSON)
+1. JSON-based endpoints (e.g., recipient or group import via JSON)
 
 For endpoints that accept JSON payloads (`Content-Type: application/json`), provide credentials in the **request body**:
 
@@ -38,7 +38,7 @@ For endpoints that accept JSON payloads (`Content-Type: application/json`), prov
 - `username`: the **username** of your admin API user
 - `password`: the **password** of your admin API user
 
-#### 2. CSV-based or non-body endpoints (e.g., CSV imports, exports, deletion)
+2. CSV-based or non-body endpoints (e.g., CSV imports, exports, deletion)
 
 For CSV-based or HTTP `GET` / `DELETE` endpoints, credentials must be provided via **HTTP headers**:
 
