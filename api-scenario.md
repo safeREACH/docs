@@ -10,7 +10,7 @@
 - **v1.5**: Added `additionalRecipients` attribute to trigger requests (2021-11-08)
 - **v1.6**: Fixed typos and formatting (2022-09-13)
 - **v1.7**: Added support for terminating alarms and sending updates to active scenarios (2024-11-28)
-- **v1.8**: Reworked structure. Added data center location Vienna. Fixed some wordings and typos.
+- **v1.8**: Reworked structure. Added data center location Vienna. Fixed some wordings and typos. (2025-08-07)
 ---
 
 ## 🎯 Purpose & Access
@@ -74,7 +74,7 @@ Contact support if you anticipate high traffic or require an increase in limits.
 
 ---
 
-## 🧱 Models
+## 🧱 Data Models
 
 ### `ScenarioConfigData`
 
@@ -479,7 +479,7 @@ HTTP 200 OK
 ---
 
 
-## ❗ Error Codes
+## ❗Error Codes
 
 | Code | Description                    |
 |------|--------------------------------|

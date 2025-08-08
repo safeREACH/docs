@@ -27,7 +27,7 @@ All endpoints of the User API require authentication using a **dedicated admin a
 
 Depending on the type of endpoint, authentication credentials must be provided either in the **HTTP request body** or via **HTTP headers**:
 
-1. JSON-based endpoints (e.g., recipient or group import via JSON)
+**1. JSON-based endpoints (e.g., recipient or group import via JSON)**
 
 For endpoints that accept JSON payloads (`Content-Type: application/json`), provide credentials in the **request body**:
 
@@ -38,14 +38,14 @@ For endpoints that accept JSON payloads (`Content-Type: application/json`), prov
 - `username`: the **username** of your admin API user
 - `password`: the **password** of your admin API user
 
-2. CSV-based or non-body endpoints (e.g., CSV imports, exports, deletion)
+**2. CSV-based or non-body endpoints (e.g., CSV imports, exports, deletion)**
 
 For CSV-based or HTTP `GET` / `DELETE` endpoints, credentials must be provided via **HTTP headers**:
 
 | Header | Required | Description |
 | --- | --- | --- |
 | `X-CustomerId` | ✅ | Your **Customer ID** or **Group ID** (same as `customerOrGroupId`) |
-| `X-Username` | ✅ | The username of the admin account with `"API user"` permission |
+| `X-Username` | ✅ | The username of the admin account with `API user` permission |
 | `X-Password` | ✅ | The password for the API user |
 | `Content-Type` | ✅ | Must be `text/csv` for CSV imports or `application/json` for JSON requests |
 | `Accept` | optional | Only required for **export** endpoints. Use `application/json` or `text/csv` to specify format |
@@ -69,7 +69,7 @@ If you're unsure, ask support which region your account is in.
 
 ---
 
-## 📦 Data Models
+## 🧱 Data Models
 
 ### RecipientData
 
@@ -323,7 +323,7 @@ id;externalId;customerId;givenname;surname;msisdn;email;comment;G1;G2
 
 ---
 
-## 📛 Error Handling
+## ❗Error Handling
 
 All endpoints in the User API respond with standardized HTTP status codes and JSON-formatted error messages. This section outlines possible errors, their causes, and how to resolve them.
 
