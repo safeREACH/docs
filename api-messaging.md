@@ -1,179 +1,113 @@
-# Messaging API
+# 📘 Messaging API Documentation
 
-## Version
+<details>
+  <summary><h2>🧩 Version History</h2></summary>
 
-- v1.0: Initial draft (2021-11-25)
-- v1.1: Error response definition and sending mechanism (2022-07-18)
-- v1.2: Replace SAFE_REACH channel name with PUSH (2022-07-22)
-- v1.3: Add new field `type` to `MessageRequest` (2022-07-25)
-- v1.4: Add new field `title` to `MessageRequest` (2022-07-25)
-- v1.5: Add new field `language` to `MessageRequest` (2022-11-07)
-- v1.6: Remove `fr`, and `it` from `language` option and add additional information for `language` field (2022-11-28)
-- v1.7: Add properties for voice calls, `retries`, `timeout`, `delay` (2023-07-13)
+| Version | Date | Changes |
+| --- | --- | --- |
+| v1.0 | 2021-11-25 | Initial draft |
+| v1.1 | 2022-07-18 | Error response definition and sending mechanism |
+| v1.2 | 2022-07-22 | Replaced `SAFE_REACH` channel name with `PUSH` |
+| v1.3 | 2022-07-25 | Added `type` field to `MessageRequest` |
+| v1.4 | 2022-07-25 | Added `title` field to `MessageRequest` |
+| v1.5 | 2022-11-07 | Added `language` field to `MessageRequest` |
+| v1.6 | 2022-11-28 | Removed `fr`, `it` from allowed languages; clarified usage of `language` |
+| v1.7 | 2023-07-13 | Added `retries`, `timeout`, and `delay` for voice calls |
+| v1.8 | 2025-08-08 | Reworked structure and fixed wordings. |
 
-## General
+</details>
 
-### Encoding
+---
 
-UTF-8 encoding shall be used at all times.
+## 🎯 Purpose & Access
 
-### Live base URL
+---
 
-https://api.safereach.com/blaulicht
+The Messaging API allows transactional sending of ad-hoc messages via multiple communication channels (SMS, EMAIL, VOICE, PUSH). It is designed for flexible, low-latency delivery in critical systems.
 
-### Usage
+The API supports:
 
-The API is a simple transactional messaging API.
+- Multi-channel fallback delivery
+- In-app push notifications (safeREACH app)
+- Voice call retries
+- Language and title control for push messages
+- Per-target delivery error reporting
 
-API requests are limited by the Fair Use Policy and configured account limits.
+### ✅ API Credentials
 
-### Authentication
+Messaging API access **requires credentials issued by the safeREACH Support Team**.
 
-For API usage your `customerId`, an automatic alarm trigger user `username` and `password` are needed.
+- These are **not** the same as User API credentials.
+- Required fields:
+    - `customerId`
+    - `username`
+    - `password`
 
-### Models
+> ℹ️ Contact support@safereach.com to request credentials.
+> 
 
-#### MessageTarget
+---
 
-- channel[]: List of `SMS`, `EMAIL`, `VOICE`, `PUSH`
-- msisdn: target phone number (mandatory for `SMS` and `VOICE`)
-- email: target email address (mandatory for `EMAIL`)
+### 🌐 Data Center Selection
 
-> NOTE: PUSH is the channel via you can notify targets in the safeREACH app.
+Depending on your account region, use the correct base URL:
 
-#### Sending mechanism
+| Region | Base URL |
+| --- | --- |
+| Frankfurt | `https://api.safereach.com/blaulicht` |
+| Vienna | `https://api.safereach.at/blaulicht` |
 
-The channel array holds all communication channels which are available for the specific target. `safeREACH` will
-send a message via all specified channels. In case the target is not reached via the defined channels, an error
-is returned (see ErrorResponse).
+> 💡 If you're unsure which data center your account belongs to, please contact safeREACH support.
+> 
+
+---
+
+### Fair Use & Rate Limits
+
+API usage is subject to:
+
+- The **Fair Use Policy**
+- **Account-specific** rate limits
+
+Contact support if you anticipate high traffic or require an increase in limits.
+
+---
+
+## 🧱 Data Models
+
+### `MessageTarget`
+
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `channel` | array of enum | Yes | List of one or more of `SMS`, `EMAIL`, `VOICE`, `PUSH` |
+| `msisdn` | string | Required if `SMS` or `VOICE` is used | Phone number in [E.164 format](https://en.wikipedia.org/wiki/E.164) |
+| `email` | string | Required if `EMAIL` is used | Email address of the target |
+
+> PUSH is used to send messages to the safeREACH mobile app. The target must be registered in the system beforehand.
+> 
 
 **Example:**
 
 ```json
 {
-  "channel": [
-    "SMS",
-    "VOICE",
-    "EMAIL"
-  ],
+  "channel": ["SMS", "VOICE", "EMAIL"],
   "msisdn": "+43123456789",
   "email": "target@acme.com"
 }
 ```
 
-## Send message
+---
 
-_**/api/messaging/v1/send**_
+### `ErrorResponse`
 
-**Method:** POST
-**Header:** `Content-Type: application/json`
+| Field | Type | Description |
+| --- | --- | --- |
+| `message` | string | Description of the error |
+| `channel` | string | Channel that failed (e.g., `SMS`, `EMAIL`, etc.) |
+| `target` | string | Phone number or email address that was not reachable |
+| `status` | integer | HTTP-like status code (`404` for not found, `409` for delivery conflict, etc.) |
 
-#### Request payload
-
-- username: string - mandatory
-- password: string - mandatory
-- customerId: string - mandatory
-- message: string - mandatory
-- type: string **(possible values: info, alarm)** - optional (when at least one of the `MessageTarget` objects has `PUSH` as channel type it
-needs to be specified)
-- title: string - optional (when at least one of the `MessageTarget` objects has `PUSH` as channel type it
-  needs to be specified)
-- language: enum - optional (valid values are: en, de)
-- retries: number - optional, default is 2 (number of retries if user does not answer voice call)
-- timeout: number (in seconds) - optional, default is 60 seconds (number of seconds to wait until user answer voice call)
-- delay: number (in seconds) - optional, default is 300 seconds (number of seconds to wait until the retry voice call is made)
-
-`NOTE:` The language property is *optional*. If it is not set, the language for the given customer is used. The current
-version can only be used properly, if the specified targets are added in the safeREACH platform. Other than that, it is 
-sufficient to specify `PUSH` as channel.
-
-Example:
-
-```json
-{
-  "username": "myUser",
-  "password": "mySuperSecretPwd",
-  "customerId": "500027",
-  "message": "Hello\n\nYou got some✉️",
-  "language": "en",
-  "targets": [
-    MessageTarget
-  ]
-}
-```
-
-#### Response
-
-The response is a json object containing the following properties:
-
-- result: string - OK, NOK, PARTIAL
-  - OK: all targets were notified
-  - NOK: no targets were notified
-  - PARTIAL: only a subset of targets was notified
-- errors: [ErrorResponse] - array of ErrorResponse objects (empty in case there are no errors)
-
-HTTP 200 OK
-
-```json
-{
-  "result": "OK",
-  "errors": []
-}
-```
-
-The following errors can occur:
-
-- HTTP 400 Bad Request: malformed JSON request received
-- HTTP 401 Unauthorized: invalid credentials
-- HTTP 403 Forbidden: missing permissions
-
-**Response in case no target could be notified:**
-```json
-{
-  "result": "NOK",
-  "errors": [
-    ErrorResponse
-  ]
-}
-```
-
-or
-
-**Response in case a subset of targets could not be notified:**
-```json
-{
-  "result": "PARTIAL",
-  "errors": [
-    ErrorResponse
-  ]
-}
-```
-
-#### Error Response
-
-The error response is a json object containing the following properties:
-
-- message: string - error description
-- channel: string - channel which was not able to be used to notify target
-- target: string - msisdn or email of the target which was not able to be reached
-- status: integer - status code for the specific message target
-  - 404 - in case the target was not found
-  - 409 - in case a target could not be notified by any of the specified channels
-
-> Each channel for a specific target will be returned as separate Error response object.
-
-#### Error Response - Example
-
-```json
-{
-  "message": "Could not notify target because channel SAFE_REACH was not defined for msisdn.",
-  "channel": "SAFE_REACH",
-  "target": "+43123456789",
-  "status": 409
-}
-```
-
-or 
+**Examples:**
 
 ```json
 {
@@ -183,3 +117,126 @@ or
   "status": 404
 }
 ```
+
+```json
+{
+  "message": "Could not notify target because channel PUSH was not defined.",
+  "channel": "PUSH",
+  "target": "+43123456789",
+  "status": 409
+}
+```
+
+---
+
+## 🔌 Endpoints
+
+All endpoints use `Content-Type: application/json` and UTF-8 encoding.
+
+---
+
+### Send message — JSON
+
+**`POST /api/messaging/v1/send`**
+
+| Field | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `username` | string | Yes | — | API username |
+| `password` | string | Yes | — | API password |
+| `customerId` | string | Yes | — | Customer ID |
+| `message` | string | Yes | — | Message content (plain text, no HTML) |
+| `type` | string | Optional | — | One of `info`, `alarm`. Required if any target includes `PUSH`. |
+| `title` | string | Optional | — | Push title shown in app. Required if `PUSH` is used. |
+| `language` | string (enum) | Optional | — | `en`, `de`. If not set, defaults to customer language. |
+| `retries` | integer | Optional | `2` | Number of retries for unanswered voice calls |
+| `timeout` | integer (sec) | Optional | `60` | Wait time for voice call response (in seconds) |
+| `delay` | integer (sec) | Optional | `300` | Delay before voice call retry (in seconds) |
+| `targets` | array of `MessageTarget` | Yes | — | Recipients list |
+
+
+**Example Request:**
+
+
+```json
+{
+  "username": "myUser",
+  "password": "mySuperSecretPwd",
+  "customerId": "500027",
+  "message": "Hello\n\nYou got some✉️",
+  "type": "info",
+  "title": "New Notification",
+  "language": "en",
+  "retries": 3,
+  "timeout": 45,
+  "delay": 180,
+  "targets": [
+    {
+      "channel": ["SMS", "VOICE", "EMAIL"],
+      "msisdn": "+43123456789",
+      "email": "target@acme.com"
+    },
+    {
+      "channel": ["PUSH"],
+      "msisdn": "+436641234567"
+    }
+  ]
+}
+```
+
+---
+
+#### Response
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `result` | string | One of `OK`, `NOK`, `PARTIAL` |
+| `errors` | array of `ErrorResponse` | Empty if all messages succeeded |
+
+**`result` meanings:**
+
+- `OK`: All targets were notified
+- `NOK`: None were notified
+- `PARTIAL`: Some targets failed
+
+---
+
+**Example: Successful Response**
+
+```json
+{
+  "result": "OK",
+  "errors": []
+}
+```
+
+---
+
+**Example: Partial Success**
+
+```json
+{
+  "result": "PARTIAL",
+  "errors": [
+    {
+      "message": "Target with the specified msisdn was not found.",
+      "channel": null,
+      "target": "+43123456789",
+      "status": 404
+    }
+  ]
+}
+```
+
+---
+
+## ❗Error Handling
+
+The following errors can be returned from the API:
+
+| HTTP Code | Meaning | Description |
+| --- | --- | --- |
+| 400 | Bad Request | Malformed JSON or invalid data format |
+| 401 | Unauthorized | Invalid username or password |
+| 403 | Forbidden | Missing permissions or invalid customer context |
+| 404 | Not Found | Target was not found in the system |
+| 409 | Conflict | Unable to deliver message via all channels |

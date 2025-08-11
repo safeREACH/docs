@@ -1,45 +1,86 @@
-# Scenario API
+# 📘 Scenario API Documentation
 
-## Version
+<details>
+  <summary><h2>🧩 Version History</h2></summary>
 
-- v1.0: Initial draft (2017-02-19)
-- v1.1: Added `additionalText` property (2018-12-14)
-- v1.2: Deprecated `LIVE` and `PRACTICE` trigger types (2020-10-12)
-- v1.3: Added new scenario list endpoint with `cutOff` and `configId` filters (2020-10-12)
-- v1.4: Added Trigger by scenario code endpoint (2021-10-12)
-- v1.5: Added `additionalRecipients` attribute to trigger requests (2021-11-08)
-- v1.6: Fixed typos and formatting (2022-09-13)
-- v1.7: Added support for terminating alarm / info and sending updates to active alarms / infos (2024-11-28)
+- **v1.0**: Initial draft (2017-02-19)
+- **v1.1**: Added `additionalText` property (2018-12-14)
+- **v1.2**: Deprecated `LIVE` and `PRACTICE` trigger types (2020-10-12)
+- **v1.3**: Added scenario list endpoint with `cutOff` and `configId` filters (2020-10-12)
+- **v1.4**: Added trigger by scenario code endpoint (2021-10-12)
+- **v1.5**: Added `additionalRecipients` attribute to trigger requests (2021-11-08)
+- **v1.6**: Fixed typos and formatting (2022-09-13)
+- **v1.7**: Added support for terminating alarms and sending updates to active scenarios (2024-11-28)
+- **v1.8**: Reworked structure. Added data center location Vienna. Fixed some wordings and typos. (2025-08-07)
 
-## General
+</details>
 
-### Encoding
+---
 
-UTF-8 encoding shall be used at all times.
+## 🎯 Purpose & Access
 
-### Live base URL
+The **Scenario API** is designed to provide **programmatic access** to the scenario-based alerting capabilities of the safeREACH platform. While scenarios can typically be triggered manually through the safeREACH web interface or mobile apps, this API extends those capabilities by enabling automated and ad hoc interaction with scenarios.
 
-https://api.safereach.com/blaulicht
+To access the Scenario API, ensure the following:
 
-### Usage
+### ✅ API Credentials
 
-The API extends the possibility for triggering scenarios in addition to the [safeREACH Cockpit](https://cockpit.safereach.com/) and [safeREACH App](https://safereach.com/en/emergency-notification-system/alert-app/).
+Scenario API access **requires credentials issued by the safeREACH Support Team**.
 
-API requests are limited by the Fair Use Policy.
+- These are **not** the same as User API credentials.
+- Required fields:
+  - `customerId`
+  - `username`
+  - `password`
 
-### Authentication
+> ℹ️ Contact [support@safereach.com](mailto:support@safereach.com) to request credentials.
 
-For API usage your `customerOrGroupId`, an automatic alarm trigger user `username` and `password` are needed. Credentials for the user and scenario api cannot be shared.
+---
 
-### Models
+### 🌐 Data Center Selection
+| Region   | Base URL                                |
+|----------|------------------------------------------|
+| Frankfurt| `https://api.safereach.com/blaulicht`    |
+| Vienna   | `https://api.safereach.at/blaulicht` |
 
-#### ScenarioConfigData
+If you're unsure, ask support which region your account is in.
 
-- scenarioConfigId: Die ID einer Konfiguration
-- customerId: Die Kundennummer zu der dieser Alarm gehört
-- name: Der Name einer Konfiguration
+---
 
-**Example:**
+### Fair Use & Rate Limits
+
+API usage is subject to:
+
+- The **Fair Use Policy**
+- **Account-specific** rate limits
+
+Contact support if you anticipate high traffic or require an increase in limits.
+
+---
+
+
+### Key Use Cases
+
+- **Automated Scenario Triggering**  
+  Integrate with internal systems (e.g., monitoring, facility management, emergency response platforms) to trigger predefined scenarios automatically when certain conditions are met.
+
+- **Dynamic Recipient Assignment**  
+  Add or override recipients on the fly using the `additionalRecipients` parameter, allowing flexibility depending on the current operational context.
+
+- **Custom User Messages**  
+  Attach contextual information to alerts via the `additionalText` field to better inform recipients during critical events.
+
+- **Centralized Orchestration**  
+  Use the API to build your own alert management dashboard or integrate scenario control into existing IT or crisis management systems.
+
+- **Programmatic Termination and Updates**  
+  Send follow-up updates or terminate scenarios based on external signals (e.g., incident resolved, escalation completed).
+
+---
+
+## 🧱 Data Models
+
+### `ScenarioConfigData`
 
 ```json
 {
@@ -49,17 +90,7 @@ For API usage your `customerOrGroupId`, an automatic alarm trigger user `usernam
 }
 ```
 
-#### ScenarioPreviewData
-
-- scenarioId
-- scenarioConfigId
-- authorId
-- authorName
-- creationDate
-- startDate
-- endDate
-
-**Example:**
+### `ScenarioPreviewData`
 
 ```json
 {
@@ -73,21 +104,9 @@ For API usage your `customerOrGroupId`, an automatic alarm trigger user `usernam
 }
 ```
 
-#### ScenarioData
+### `ScenarioData`
 
-- scenarioId
-- scenarioConfigId
-- authorId
-- authorName
-- usersAlertedCount
-- creationDate
-- startDate
-- endDate
-- alarms: List of alarm objects
-
-**Example:**
-
-```jsonc
+```json
 {
   "scenarioId": "123-ABC-asdfqwerasdf",
   "scenarioConfigId": "123-ABC-asdfqwerasdf-CONFIG",
@@ -103,323 +122,55 @@ For API usage your `customerOrGroupId`, an automatic alarm trigger user `usernam
 }
 ```
 
-#### RecipientConfiguration
-
+### `RecipientConfiguration`
 - type: one of `"MSISDN"`, `"GROUP"`, `"CASCADE"`
 - target: depending on `type`, either a group or cascade ID, or a telephone number with country prefix ([E. 164 format](https://en.wikipedia.org/wiki/E.164))
 
-**Examples:**
-
-```jsonc
-// RecipientConfiguration where the target is a phone number
+```json
 {
   "type": "MSISDN",
   "target": "+4367712345678"
 }
 ```
 
-```jsonc
-// RecipientConfiguration where the target is a group
+```json
 {
   "type": "GROUP",
   "target": "G1"
 }
 ```
 
-#### EndAlarmType
+### `EndAlarmType`
 
-- one of: `SILENT`, `LOUD`
-- defines the sound of the notification when an alarm / info is terminated
+- `SILENT`: a simple notification sound (similar to receiving a text message)  
+- `LOUD`: regular alarm sound (full duration of chosen alarm sound)
 
-`SILENT`: a simple notification sound (similar to receiving a text message)  
-`LOUD`: continues ringing for a specific amount of time (the duration of one soundtrack)
+---
 
-## List scenario configurations
+## 🔌 Endpoints
 
-_**/api/alarm/v1/scenario/config/list**_
+All endpoints use `Content-Type: application/json` and UTF-8 encoding.
 
-**Method:** POST  
-**Header:** `Content-Type: application/json`
+---
 
-#### Request payload
+### List Scenarios
 
-- username: string - mandatory
-- password: string - mandatory
-- customerIds: List<string> - mandatory
+**POST** `/api/alarm/v1/scenario/list`
 
-Example:
+**Parameters:**
 
-```json
-{
-  "username": "myUser",
-  "password": "mySuperSecretPwd",
-  "customerIds": [
-    "500027"
-  ]
-}
-```
+| Name               | Type            | Required | Default | Description                                          |
+|--------------------|-----------------|----------|---------|------------------------------------------------------|
+| username           | string          | Yes      | –       | API username                                         |
+| password           | string          | Yes      | –       | API password                                         |
+| customerId         | string          | Yes      | –       | Customer ID                                          |
+| startedOrEndedAfter| ISO 8601 string | No       |         | Filter for scenarios started or ended after this date |
+| scenarioConfigIds  | List<string>    | No       |         | Filter for specific scenario configurations          |
 
-#### Response
 
-HTTP 200 OK
+**Example**
 
-```jsonc
-{
-  "result": "OK",
-  "description": "",
-  "configs": [
-    // <ScenarioConfigData>
-  ]
-}
-```
-
-The following errors can occur:
-
-- HTTP 400 BAD Request: malformed JSON request received
-- HTTP 401 Unauthorized: invalid credentials
-- HTTP 403 Forbidden: missing permissions
-
-## Trigger by scenario config id
-
-_**/api/alarm/v1/scenario/trigger**_
-
-**Method:** POST    
-**Header:** `Content-Type: application/json`
-
-- username: string - mandatory
-- password: string - mandatory
-- customerId: string - mandatory
-- scenarioConfigId: string - mandatory
-- additionalText: string - optional
-- additionalRecipients: RecipientConfiguration[] - optional
-
-#### Example request
-
-```json
-{
-  "username": "myUser",
-  "password": "mySuperSecretPwd",
-  "customerId": "500027",
-  "scenarioConfigId": "32849abcdef23343",
-  "additionalText": "Zusatzinfo vom User",
-  "additionalRecipients": [
-    {
-      "type": "MSISDN",
-      "target": "+4367712345678"
-    }
-  ]
-}
-```
-
-#### Response
-
-HTTP 200 OK
-
-```json
-{
-  "result": "OK",
-  "description": "",
-  "scenarioId": "123-ABC-asdfqwerasdf"
-}
-```
-
-The following errors can occur:
-
-- HTTP 400 BAD Request: malformed JSON request received
-- HTTP 401 Unauthorized: invalid credentials
-- HTTP 403 Forbidden: missing permissions
-
-## Trigger by scenario code
-
-_**/api/alarm/v1/scenario/trigger/code**_
-
-**Method:** POST    
-**Header:** `Content-Type: application/json`
-
-- username: string - mandatory
-- password: string - mandatory
-- customerId: string - mandatory
-- code: string - mandatory
-- additionalText: string - optional
-- additionalRecipients: RecipientConfiguration[] - optional
-
-#### Example request
-
-```json
-{
-  "username": "myUser",
-  "password": "mySuperSecretPwd",
-  "customerId": "500027",
-  "code": "V1",
-  "additionalText": "Zusatzinfo vom User",
-  "additionalRecipients": [
-    {
-      "type": "MSISDN",
-      "target": "+4367712345678"
-    }
-  ]
-}
-```
-
-#### Response
-
-HTTP 200 OK
-
-```json
-{
-  "result": "OK",
-  "description": "",
-  "scenarioId": "123-ABC-asdfqwerasdf"
-}
-```
-
-The following errors can occur:
-
-- HTTP 400 BAD Request: malformed JSON request received
-- HTTP 401 Unauthorized: invalid credentials
-- HTTP 403 Forbidden: missing permissions
-
-## Send updates to active scenario
-
-_**/api/alarm/v1/scenario/{scenarioId}/updates**_
-
-**Method:** PATCH    
-**Path Variable:** scenarioId - can be extracted from the response of triggering a scenario    
-**Header:** `Content-Type: application/json`
-
-- username: string - mandatory
-- password: string - mandatory
-- customerId: string - mandatory
-- text: string - mandatory
-
-#### Example request
-
-```json
-{
-  "username": "myUser",
-  "password": "mySuperSecretPwd",
-  "customerId": "500027",
-  "text": "Fire detected near warehouse. Please evacuate."
-}
-```
-
-#### Response
-
-HTTP 200 OK
-
-```json
-{
-  "result": "OK",
-  "description": ""
-}
-```
-
-The following errors can occur:
-
-- HTTP 400 BAD Request: malformed JSON request received
-- HTTP 401 Unauthorized: invalid credentials
-- HTTP 403 Forbidden: missing permissions
-
-## Terminate scenario
-
-_**/api/alarm/v1/scenario/{scenarioId}**_
-
-**Method:** PATCH    
-**Path Variable:** scenarioId - can be extracted from the response of triggering a scenario    
-**Header:** `Content-Type: application/json`
-
-- username: string - mandatory
-- password: string - mandatory
-- customerId: string - mandatory
-- terminationMessage: string - optional (gives recipients more information on why the alarm / info is terminated)
-- endAlarmType: EndAlarmType - optional (default: SILENT)
-
-#### Example request
-
-```json
-{
-  "username": "myUser",
-  "password": "mySuperSecretPwd",
-  "customerId": "500027",
-  "terminationMessage": "Incident resolved. No further action needed.",
-  "endAlarmType": "LOUD"
-}
-```
-
-#### Response
-
-HTTP 200 OK
-
-```json
-{
-  "result": "OK",
-  "description": ""
-}
-```
-
-The following errors can occur:
-
-- HTTP 400 BAD Request: malformed JSON request received
-- HTTP 401 Unauthorized: invalid credentials
-- HTTP 403 Forbidden: missing permissions
-
-## Query a scenario
-
-_**/api/alarm/v1/scenario/query**_
-
-**Method:** POST  
-**Header:** `Content-Type: application/json`
-
-- username: string - mandatory
-- password: string - mandatory
-- customerId: string - mandatory
-- scenarioId: string - mandatory
-
-#### Example request
-
-```json
-{
-  "username": "myUser",
-  "password": "mySuperSecretPwd",
-  "customerId": "500027",
-  "scenarioId": "123-ABC-asdfqwerasdf"
-}
-```
-
-#### Response
-
-HTTP 200 OK
-
-```jsonc
-{
-  "result": "OK",
-  "description": "",
-  "scenarioData": {
-    // <ScenarioData>
-  }
-}
-```
-
-The following errors can occur:
-
-- HTTP 400 BAD Request: malformed JSON request received
-- HTTP 401 Unauthorized: invalid credentials
-- HTTP 403 Forbidden: missing permissions
-
-## List scenarios
-
-_**/api/alarm/v1/scenario/list**_
-
-**Method:** POST  
-**Header:** `Content-Type: application/json`
-
-- username: string - mandatory
-- password: string - mandatory
-- customerId: string - mandatory
-- startedOrEndedAfter: date - optional
-- scenarioConfigIds: List<string> - optional
-
-#### Example request
+Request:
 
 ```json
 {
@@ -434,7 +185,7 @@ _**/api/alarm/v1/scenario/list**_
 }
 ```
 
-#### Response
+Response:
 
 HTTP 200 OK
 
@@ -453,11 +204,303 @@ HTTP 200 OK
 }
 ```
 
-The value of `startedOrEndedBefore` should be used as `startedOrEndedAfter` for the next request.
+The value of `startedOrEndedBefore` can be used as `startedOrEndedAfter` for the next request.
 
-The following errors can occur:
 
-- HTTP 400 BAD Request: malformed JSON request received
-- HTTP 401 Unauthorized: invalid credentials
-- HTTP 403 Forbidden: missing permissions
+---
+
+### Query a Scenario
+
+**POST** `/api/alarm/v1/scenario/query`
+
+**Parameters:**
+
+| Name        | Type   | Required | Default | Description     |
+|-------------|--------|----------|---------|-----------------|
+| username    | string | Yes      | –       | API username    |
+| password    | string | Yes      | –       | API password    |
+| customerId  | string | Yes      | –       | Customer ID     |
+| scenarioId  | string | Yes      | –       | Scenario ID     |
+
+
+**Example**
+
+Request:
+
+```json
+{
+  "username": "myUser",
+  "password": "mySuperSecretPwd",
+  "customerId": "500027",
+  "scenarioId": "123-ABC-asdfqwerasdf"
+}
+```
+
+Response:
+
+HTTP 200 OK
+
+```jsonc
+{
+  "result": "OK",
+  "description": "",
+  "scenarioData": {
+    // <ScenarioData>
+  }
+}
+```
+
+---
+
+
+### List Scenario Configurations
+
+**POST** `/api/alarm/v1/scenario/config/list`
+
+**Parameters:**
+
+| Name         | Type         | Required | Default | Description                        |
+|--------------|--------------|----------|---------|------------------------------------|
+| username     | string       | Yes      | –       | API username                       |
+| password     | string       | Yes      | –       | API password                       |
+| customerIds  | List<string> | Yes      | –       | List of customer IDs               |
+
+
+**Example**
+
+Request:
+
+```json
+{
+  "username": "myUser",
+  "password": "mySuperSecretPwd",
+  "customerIds": [
+    "500027"
+  ]
+}
+```
+
+Response:
+
+HTTP 200 OK
+
+```json
+{
+  "result": "OK",
+  "description": "",
+  "configs": [
+    // <ScenarioConfigData>
+  ]
+}
+```
+
+---
+
+### Trigger by Scenario Config ID
+
+**POST** `/api/alarm/v1/scenario/trigger`
+
+**Parameters:**
+
+| Name               | Type                    | Required | Default | Description                             |
+|--------------------|-------------------------|----------|---------|-----------------------------------------|
+| username           | string                  | Yes      | –       | API username                            |
+| password           | string                  | Yes      | –       | API password                            |
+| customerId         | string                  | Yes      | –       | Customer ID                             |
+| scenarioConfigId   | string                  | Yes      | –       | Scenario configuration ID               |
+| additionalText     | string                  | No       |         | Optional message                        |
+| additionalRecipients | List<RecipientConfiguration> | No |         | Additional recipients to be alerted     |
+
+
+**Example**
+
+Request:
+
+```json
+{
+  "username": "myUser",
+  "password": "mySuperSecretPwd",
+  "customerId": "500027",
+  "scenarioConfigId": "32849abcdef23343",
+  "additionalText": "Zusatzinfo vom User",
+  "additionalRecipients": [
+    {
+      "type": "MSISDN",
+      "target": "+4367712345678"
+    }
+  ]
+}
+```
+
+Response:
+
+HTTP 200 OK
+
+```json
+{
+  "result": "OK",
+  "description": "",
+  "scenarioId": "123-ABC-asdfqwerasdf"
+}
+```
+
+---
+
+### Trigger by Scenario Code
+
+**POST** `/api/alarm/v1/scenario/trigger/code`
+
+**Parameters:**
+
+| Name               | Type                    | Required | Default | Description                             |
+|--------------------|-------------------------|----------|---------|-----------------------------------------|
+| username           | string                  | Yes      | –       | API username                            |
+| password           | string                  | Yes      | –       | API password                            |
+| customerId         | string                  | Yes      | –       | Customer ID                             |
+| code               | string                  | Yes      | –       | Scenario short code                     |
+| additionalText     | string                  | No       |         | Optional message                        |
+| additionalRecipients | List<RecipientConfiguration> | No |         | Additional recipients to be alerted     |
+
+
+**Example**
+
+Request:
+
+```json
+{
+  "username": "myUser",
+  "password": "mySuperSecretPwd",
+  "customerId": "500027",
+  "code": "V1",
+  "additionalText": "Zusatzinfo vom User",
+  "additionalRecipients": [
+    {
+      "type": "MSISDN",
+      "target": "+4367712345678"
+    }
+  ]
+}
+```
+
+Response:
+
+HTTP 200 OK
+
+```json
+{
+  "result": "OK",
+  "description": "",
+  "scenarioId": "123-ABC-asdfqwerasdf"
+}
+```
+
+---
+
+### Send Update to an Active Scenario
+
+**POST** `/api/alarm/v1/scenario/{scenarioId}/updates`
+
+**Path Variable:** `{scenarioId} - can be extracted from the response when triggering by [scenario config id](#trigger-by-scenario-config-id) or [scenario code](#trigger-by-scenario-code), alternatively, can be obtained when [listing scenarios](#list-scenarios).
+
+**Parameters:**
+
+| Name        | Type   | Required | Default | Description                 |
+|-------------|--------|----------|---------|-----------------------------|
+| username    | string | Yes      | –       | API username                |
+| password    | string | Yes      | –       | API password                |
+| customerId  | string | Yes      | –       | Customer ID                 |
+| text        | string | Yes      | –       | Update message text         |
+
+
+**Example**
+
+Request:
+
+```json
+{
+  "username": "myUser",
+  "password": "mySuperSecretPwd",
+  "customerId": "500027",
+  "text": "Fire detected near warehouse. Please evacuate."
+}
+```
+
+Response:
+
+HTTP 200 OK
+
+```json
+{
+  "result": "OK",
+  "description": ""
+}
+```
+
+---
+
+### Terminate Scenario
+
+**PATCH** `/api/alarm/v1/scenario/{scenarioId}`
+
+**Path Variable:** `{scenarioId}` - can be extracted from the response when triggering by [scenario config id](#trigger-by-scenario-config-id) or [scenario code](#trigger-by-scenario-code), alternatively, can be obtained when [listing scenarios](#list-scenarios).
+
+**Parameters:**
+
+| Name               | Type         | Required | Default | Description                                   |
+|--------------------|--------------|----------|---------|-----------------------------------------------|
+| username           | string       | Yes      | –       | API username                                  |
+| password           | string       | Yes      | –       | API password                                  |
+| customerId         | string       | Yes      | –       | Customer ID                                   |
+| terminationMessage | string       | No       |         | Message shown on termination                  |
+| endAlarmType       | EndAlarmType | No       | SILENT  | Type of sound played when alarm is terminated |
+
+
+**Example**
+
+Request:
+
+```json
+{
+  "username": "myUser",
+  "password": "mySuperSecretPwd",
+  "customerId": "500027",
+  "terminationMessage": "Incident resolved. No further action needed.",
+  "endAlarmType": "LOUD"
+}
+```
+
+Response:
+
+HTTP 200 OK
+
+```json
+{
+  "result": "OK",
+  "description": ""
+}
+```
+
+---
+
+
+## ❗Error Codes
+
+| Code | Description                    |
+|------|--------------------------------|
+| 400  | Bad Request — malformed JSON   |
+| 401  | Unauthorized — invalid login   |
+| 403  | Forbidden — insufficient rights |
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -1,25 +1,44 @@
-# safeREACH docs
+# 📘 safeREACH API Documentation
 
-## Scenario API
+Welcome to the safeREACH API documentation. Here you’ll find references for securely triggering scenarios, managing users, sending messages, and integrating with other systems — all designed to help you automate and extend your alerting and communication workflows.
 
-> Query and trigger existing scenarios
+---
 
-* REST API reference: [Scenario API](./api-scenario.md)
-* Text message API reference: [Text message API](./text-message.md)
+## 🚨 Scenario APIs
 
-## User API
+Trigger predefined scenarios via REST or SMS, including support for real-time customization and location data.
 
-> Import and export users via JSON or csv
+- **REST API reference:** [Scenario API](./api-scenario.md)
+    
+    Trigger scenarios with programmatic overrides and additional options
+    
+- **SMS API reference:** [Text Message API](./text-message.md)
+    
+    Trigger scenarios via SMS from authorized sender numbers
+    
 
-* REST API reference: [User API](./api-user.md)
+---
 
-## Messaging API
+## 👥 User Management API
 
-> Send individual messages via VOICE, SMS, EMAIL or PUSH
+Programmatically manage recipients, groups, and functions using JSON or CSV.
 
-* REST API reference: [Messaging API](./api-messaging.md)
+Import, update, export, and delete users in bulk.
 
-## Custom Integrations
+- **REST API reference:** [User API](./api-user.md)
 
-safeREACH provides a wide range of custom REST and third party integrations.
-[Contact us](https://safereach.com/en/contact/) for more details or read more about our integrations on [our website](https://safereach.com/en/emergency-notification-system/integration-interfaces/).
+---
+
+## ✉️ Messaging API
+
+Send one-off transactional messages directly to users using voice, SMS, email, or push.
+
+- **REST API reference:** [Messaging API](./api-messaging.md)
+
+---
+
+## 🔌 Custom Integrations
+
+Need more flexibility? safeREACH supports advanced integrations through additional APIs, middleware, and third-party platforms.
+
+➡️ [Contact us](https://safereach.com/en/contact/) for custom solutions, or read more about our integration capabilities on [our website](https://safereach.com/en/emergency-notification-system/integration-interfaces/).
