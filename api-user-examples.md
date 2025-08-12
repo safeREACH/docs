@@ -1,6 +1,6 @@
 # 📋 Common Use Cases - User Management API
 
-This section shows typical ways customers use the User API — from **business goals** to **exact API calls**.
+This section shows typical ways customers use the [User API](./api-user.md) — from **business goals** to **exact API calls**.
 
 It’s structured so you can:
 
