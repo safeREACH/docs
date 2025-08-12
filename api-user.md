@@ -22,7 +22,7 @@
 
 ## 🎯 Purpose & Access
 
-The **User API** provides secure, programmatic access to manage recipients, groups, and functions on the safeREACH platform. It enables automation for user lifecycle management, group assignment, and metadata synchronization.
+The **User Management API** provides secure, programmatic access to manage recipients, groups, and functions on the safeREACH platform. It enables automation for user lifecycle management, group assignment, and metadata synchronization. For detailed examples see the [Common Use Cases & Examples](./api-user-examples.md) document.
 
 ### 🔐 Authentication
 
@@ -32,7 +32,7 @@ Depending on the type of endpoint, authentication credentials must be provided e
 
 **1. JSON-based endpoints (e.g., recipient or group import via JSON)**
 
-For endpoints that accept JSON payloads (`Content-Type: application/json`), provide credentials in the **request body**:
+For endpoints that accept JSON payloads (`Content-Type: application/json; charset=utf-8`), provide credentials in the **request body**:
 
 - `customerOrGroupId`:
     - For most customers, this is your **Customer ID** (e.g., `"500027"`).
@@ -144,7 +144,7 @@ If you're unsure, ask support which region your account is in.
 
 ## 🔌 Endpoints
 
-All endpoints use `Content-Type: application/json` and UTF-8 encoding.
+If not specified differently, all endpoints require header `Content-Type: application/json; charset=utf-8`.
 
 ---
 
@@ -323,6 +323,16 @@ id;externalId;customerId;givenname;surname;msisdn;email;comment;G1;G2
 - Use `merge` for safe migrations from legacy systems
 - Assign functions for richer role-based logic
 - Avoid mixing `id` and `externalId` logic within the same request
+
+---
+
+## 🐞 Known Issues
+
+**Recipient Groups with `externalId` become System Groups**
+
+Creating recipient groups via `POST /blaulicht/api/public/v1/group/import` with `externalId` set results in **system groups** that cannot be edited or deleted. This limits management flexibility and may cause clutter in group lists.
+
+**Workaround:** Omit `externalId` when creating groups unless system group behavior is desired.
 
 ---
 

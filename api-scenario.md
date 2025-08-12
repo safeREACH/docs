@@ -149,7 +149,7 @@ Contact support if you anticipate high traffic or require an increase in limits.
 
 ## 🔌 Endpoints
 
-All endpoints use `Content-Type: application/json` and UTF-8 encoding.
+If not specified differently, all endpoints require header `Content-Type: application/json; charset=utf-8`
 
 ---
 
