@@ -13,10 +13,12 @@ It’s structured so you can:
 | Use Case | Endpoint(s) | Key Parameters / Headers | Tips |
 | --- | --- | --- | --- |
 | **[Initial User & Group Onboarding](#initial-user--group-onboarding)** | `POST /api/public/v1/group/importPOST /api/public/v1/functions/{customerId}/importPOST /api/public/v1/recipient/import` | **Body:**`customerOrGroupId`, `username`, `password`,`dryRun`, `externalId`, `groups` / `functions` / `recipients` arrays | Import groups/functions **before** recipients. Use `dryRun=true` to validate. Assign `groups` and `functions` in recipient imports. |
-| **[Daily / Scheduled Sync with External System](#daily--scheduled-sync-with-external-system)** | `POST /api/public/v1/recipient/import` | **Body:**`externalId=truepartial=truemerge=truerecipients` array | Use stable `externalId`mapping to avoid duplicates. Set `partial=true` to remove missing users automatically. Automate via cron or integration job. |
+| **Daily / Scheduled Sync — [Full (Authoritative)](#a-full-sync-authoritative)** | `POST /api/public/v1/recipient/import` | **Body:**`externalId=truepartial=false`optional `deleteOnlyExternal=true`optional `merge=truerecipients` array | Use when the feed contains the **entire desired population**. Missing entries are deleted (subject to `deleteOnlyExternal`). Best for authoritative HR/AD exports. |
+| **Daily / Scheduled Sync — [Partial (Append/Update-Only)](#b-partial-sync-appendupdate-only)** | `POST /api/public/v1/recipient/import` | **Body:**`externalId=truepartial=true`optional `merge=truerecipients` array | Use when the feed contains only **new/updated entries**. Existing recipients not in the feed remain untouched. Best for delta updates or incremental syncs. |
 | **[One-off Bulk Updates](#one-off-bulk-updates)** | `POST /api/public/v1/recipient/import` | **Body:**`externalId=truemerge=truedryRun=truerecipients` array | Ideal for department renames, adding functions, updating emails. Use `merge=true` to avoid overwriting unrelated fields. |
 | **[Selective User or Group Deletion](#selective-user-or-group-deletion)** | `DELETE /api/public/v1/recipient`**or** `POST /api/public/v1/recipient/import` with `recipientsToDelete` / `groupsToDelete` | **Body:**`externalId=truedeleteOnlyExternal=truedryRun=truerecipientsToDelete` / `groupsToDelete` arrays | Use `deleteOnlyExternal=true`to avoid deleting manually added entries. Always preview with `dryRun=true`. |
 | **[Export for Auditing or Reporting](#export-for-auditing-or-reporting)** | `GET /api/public/v1/recipient/{customerOrGroupId}/exportGET /api/public/v1/group/{customerOrGroupId}/export` | **Headers:**`X-CustomerId`, `X-Username`, `X-Password`,`Accept: application/json` or `text/csv` | Use JSON for integration into BI tools, CSV for Excel/manual review. Export regularly for compliance audits. |
+
 
 ## **Initial User & Group Onboarding**
 
@@ -105,16 +107,141 @@ curl -X POST "<BASE_URL>/api/public/v1/recipient/import" \
 
 ## **Daily or Scheduled Sync with an External System**
 
-Automate safeREACH to stay in sync with a master data source such as **Active Directory, LDAP, or an HR system**.
+Keep safeREACH aligned with your source of truth (HR, AD/LDAP, ERP). Choose **Full** when the source feed is authoritative and complete; choose **Partial** when the feed is incremental or non-exhaustive.
 
-- **What it does:** Adds new staff, updates existing user details, and removes users who no longer exist in the source system.
-- **When to use:** To keep data accurate without manual updates.
-- **Example:** Every night, a script queries the HR API for all active employees and calls `/recipient/import` with `externalId = true` and `partial = true`.
-- **Key tips:**
-    - Use `externalId` for stable cross-system matching.
-    - Use `merge = true` if matching by MSISDN.
+### 🧭 Which one do I need?
 
-**Example Request:**
+| Mode | When to use | What happens to records **missing** from the payload? | Typical flags |
+| --- | --- | --- | --- |
+| **Full (Authoritative) Sync** | Your feed contains the **entire** population you want in safeREACH | They are **deleted** (or ignored if `deleteOnlyExternal=true`) | `externalId=true`, `partial=false`, optional `deleteOnlyExternal=true`, optional `merge=true` |
+| **Partial (Append/Update)** | Your feed contains only **changes** (new/updated users), not the full set | They are **kept** (no deletions) | `externalId=true`, `partial=true`, optional `merge=true` |
+
+> ✅ Always prefer `externalId=true` for stable cross-system matching.
+> 
+> 
+> 🧪 Run a `dryRun=true` first to preview changes.
+> 
+
+---
+
+### **A. Full Sync (Authoritative)**
+
+**Goal:** Make safeREACH exactly match the source system on each run (create, update, and **delete** anything not in the feed).
+
+**Key flags**
+
+- `externalId = true` (stable identity across systems)
+- `partial = false` (treat payload as the **complete** set)
+- `deleteOnlyExternal = true` *(optional)* delete only records that have an `externalId` (protects manually created users)
+- `merge = true` *(optional)* to avoid overwriting unrelated fields if you send sparse records
+
+**Example (JSON)**
+
+```bash
+curl -X POST "<BASE_URL>/api/public/v1/recipient/import" \
+  -H "Content-Type: application/json; charset=utf-8" \
+  -d '{
+    "customerOrGroupId": "<CUSTOMER_ID>",
+    "username": "<API_USER>",
+    "password": "<API_PASS>",
+    "dryRun": true,
+    "externalId": true,
+    "partial": false,
+    "deleteOnlyExternal": true,
+    "merge": true,
+    "recipients": [
+      {
+        "externalId": "HR-1001",
+        "customerId": "<CUSTOMER_ID>",
+        "msisdn": "+4366412345001",
+        "givenname": "Ada",
+        "surname": "Lovelace",
+        "email": "ada.lovelace@example.com",
+        "groups": [ { "groupId": "G1" } ]
+      },
+      {
+        "externalId": "HR-1002",
+        "customerId": "<CUSTOMER_ID>",
+        "msisdn": "+4366412345002",
+        "givenname": "Grace",
+        "surname": "Hopper",
+        "email": "grace.hopper@example.com",
+        "groups": [ { "groupId": "G2" } ]
+      }
+    ]
+  }'
+
+```
+
+**Notes**
+
+- With `partial=false`, **any recipient with `externalId` not present** in `recipients[]` becomes a **deletion candidate** (subject to `deleteOnlyExternal`).
+- You can also apply the same logic to **groups/functions** using their respective import endpoints.
+- For extra control, you may explicitly pass `recipientsToDelete` / `groupsToDelete` (not required if `partial=false`already fits your policy).
+
+---
+
+### **B. Partial Sync (Append/Update-Only)**
+
+**Goal:** Only add or update what’s provided; do **not** delete anything that isn’t in the payload.
+
+**Key flags**
+
+- `externalId = true`
+- `partial = true` (no implicit deletions)
+- `merge = true` *(recommended)* if you send sparse updates
+
+**Example (JSON)**
+
+```bash
+curl -X POST "<BASE_URL>/api/public/v1/recipient/import" \
+  -H "Content-Type: application/json; charset=utf-8" \
+  -d '{
+    "customerOrGroupId": "<CUSTOMER_ID>",
+    "username": "<API_USER>",
+    "password": "<API_PASS>",
+    "dryRun": false,
+    "externalId": true,
+    "partial": true,
+    "merge": true,
+    "recipients": [
+      {
+        "externalId": "HR-1002",
+        "customerId": "<CUSTOMER_ID>",
+        "msisdn": "+4366412345002",
+        "givenname": "Grace",
+        "surname": "Hopper",
+        "comment": "Dept: Engineering"   // updates comment only when merge=true
+      },
+      {
+        "externalId": "HR-2001",
+        "customerId": "<CUSTOMER_ID>",
+        "msisdn": "+4366412345201",
+        "givenname": "Linus",
+        "surname": "Torvalds",
+        "email": "linus.torvalds@example.com",
+        "groups": [ { "groupId": "G1" } ]
+      }
+    ]
+  }'
+
+```
+
+**Notes**
+
+- Great for **incremental feeds** (e.g., from AD delta exports).
+- Nothing gets deleted automatically; to remove users, either:
+    - switch to a **Full** sync periodically, or
+    - use `recipientsToDelete`/`groupsToDelete` in a targeted cleanup job.
+
+---
+
+### 🔒 Safety checklist
+
+- Start with `dryRun=true` for both modes.
+- Consider `deleteOnlyExternal=true` in Full syncs to protect manually created records.
+- Ensure all identities in your source have unique, stable `externalId` values.
+- If you rely on MSISDN matching, set `merge=true` and keep MSISDNs unique.
 
 ```bash
 curl -X POST "<BASE_URL>/api/public/v1/recipient/import" \
