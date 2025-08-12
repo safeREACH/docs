@@ -25,7 +25,7 @@ Programmatically manage recipients, groups, and functions using JSON or CSV.
 
 Import, update, export, and delete users in bulk.
 
-- **REST API reference:** [User API](./api-user.md)
+- **User Management API :** [REST API reference](./api-user.md) | [Common Use Cases & Examples](./api-user-examples.md)
 
 ---
 

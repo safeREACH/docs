@@ -32,7 +32,7 @@ Depending on the type of endpoint, authentication credentials must be provided e
 
 **1. JSON-based endpoints (e.g., recipient or group import via JSON)**
 
-For endpoints that accept JSON payloads (`Content-Type: application/json`), provide credentials in the **request body**:
+For endpoints that accept JSON payloads (`Content-Type: application/json; charset=utf-8`), provide credentials in the **request body**:
 
 - `customerOrGroupId`:
     - For most customers, this is your **Customer ID** (e.g., `"500027"`).
@@ -144,7 +144,7 @@ If you're unsure, ask support which region your account is in.
 
 ## 🔌 Endpoints
 
-All endpoints use `Content-Type: application/json` and UTF-8 encoding.
+If not specified differently, all endpoints require header `Content-Type: application/json; charset=utf-8`.
 
 ---
 
