@@ -22,7 +22,7 @@
 
 ## 🎯 Purpose & Access
 
-The **User API** provides secure, programmatic access to manage recipients, groups, and functions on the safeREACH platform. It enables automation for user lifecycle management, group assignment, and metadata synchronization.
+The **User Management API** provides secure, programmatic access to manage recipients, groups, and functions on the safeREACH platform. It enables automation for user lifecycle management, group assignment, and metadata synchronization. For detailed examples see the [Common Use Cases & Examples](./api-user-examples.md) document.
 
 ### 🔐 Authentication
 

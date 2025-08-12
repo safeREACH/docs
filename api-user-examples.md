@@ -10,15 +10,15 @@ It’s structured so you can:
 
 ## 📄 Quick Reference: Use Cases → Endpoints → Parameters
 
-| # | Use Case | Endpoint(s) | Key Parameters / Headers | Tips |
-| --- | --- | --- | --- | --- |
-| **1** | **[Initial User & Group Onboarding](#initial-user--group-onboarding)** | `POST /api/public/v1/group/importPOST /api/public/v1/functions/{customerId}/importPOST /api/public/v1/recipient/import` | **Body:**`customerOrGroupId`, `username`, `password`,`dryRun`, `externalId`, `groups` / `functions` / `recipients` arrays | Import groups/functions **before** recipients. Use `dryRun=true` to validate. Assign `groups` and `functions` in recipient imports. |
-| **2** | **[Daily / Scheduled Sync with External System](#daily--scheduled-sync-with-external-system)** | `POST /api/public/v1/recipient/import` | **Body:**`externalId=truepartial=truemerge=truerecipients` array | Use stable `externalId`mapping to avoid duplicates. Set `partial=true` to remove missing users automatically. Automate via cron or integration job. |
-| **3** | **[One-off Bulk Updates](#one-off-bulk-updates)** | `POST /api/public/v1/recipient/import` | **Body:**`externalId=truemerge=truedryRun=truerecipients` array | Ideal for department renames, adding functions, updating emails. Use `merge=true` to avoid overwriting unrelated fields. |
-| **4** | **[Selective User or Group Deletion](#selective-user-or-group-deletion)** | `DELETE /api/public/v1/recipient`**or** `POST /api/public/v1/recipient/import` with `recipientsToDelete` / `groupsToDelete` | **Body:**`externalId=truedeleteOnlyExternal=truedryRun=truerecipientsToDelete` / `groupsToDelete` arrays | Use `deleteOnlyExternal=true`to avoid deleting manually added entries. Always preview with `dryRun=true`. |
-| **5** | **[Export for Auditing or Reporting](#export-for-auditing-or-reporting)** | `GET /api/public/v1/recipient/{customerOrGroupId}/exportGET /api/public/v1/group/{customerOrGroupId}/export` | **Headers:**`X-CustomerId`, `X-Username`, `X-Password`,`Accept: application/json` or `text/csv` | Use JSON for integration into BI tools, CSV for Excel/manual review. Export regularly for compliance audits. |
+| Use Case | Endpoint(s) | Key Parameters / Headers | Tips |
+| --- | --- | --- | --- |
+| **[Initial User & Group Onboarding](#initial-user--group-onboarding)** | `POST /api/public/v1/group/importPOST /api/public/v1/functions/{customerId}/importPOST /api/public/v1/recipient/import` | **Body:**`customerOrGroupId`, `username`, `password`,`dryRun`, `externalId`, `groups` / `functions` / `recipients` arrays | Import groups/functions **before** recipients. Use `dryRun=true` to validate. Assign `groups` and `functions` in recipient imports. |
+| **[Daily / Scheduled Sync with External System](#daily--scheduled-sync-with-external-system)** | `POST /api/public/v1/recipient/import` | **Body:**`externalId=truepartial=truemerge=truerecipients` array | Use stable `externalId`mapping to avoid duplicates. Set `partial=true` to remove missing users automatically. Automate via cron or integration job. |
+| **[One-off Bulk Updates](#one-off-bulk-updates)** | `POST /api/public/v1/recipient/import` | **Body:**`externalId=truemerge=truedryRun=truerecipients` array | Ideal for department renames, adding functions, updating emails. Use `merge=true` to avoid overwriting unrelated fields. |
+| **[Selective User or Group Deletion](#selective-user-or-group-deletion)** | `DELETE /api/public/v1/recipient`**or** `POST /api/public/v1/recipient/import` with `recipientsToDelete` / `groupsToDelete` | **Body:**`externalId=truedeleteOnlyExternal=truedryRun=truerecipientsToDelete` / `groupsToDelete` arrays | Use `deleteOnlyExternal=true`to avoid deleting manually added entries. Always preview with `dryRun=true`. |
+| **[Export for Auditing or Reporting](#export-for-auditing-or-reporting)** | `GET /api/public/v1/recipient/{customerOrGroupId}/exportGET /api/public/v1/group/{customerOrGroupId}/export` | **Headers:**`X-CustomerId`, `X-Username`, `X-Password`,`Accept: application/json` or `text/csv` | Use JSON for integration into BI tools, CSV for Excel/manual review. Export regularly for compliance audits. |
 
-## **1. Initial User & Group Onboarding**
+## **Initial User & Group Onboarding**
 
 When first setting up safeREACH, you can bulk-import all recipients, groups, and functions in one or more API calls.
 
@@ -103,7 +103,7 @@ curl -X POST "<BASE_URL>/api/public/v1/recipient/import" \
 
 ---
 
-## **2. Daily or Scheduled Sync with an External System**
+## **Daily or Scheduled Sync with an External System**
 
 Automate safeREACH to stay in sync with a master data source such as **Active Directory, LDAP, or an HR system**.
 
@@ -144,7 +144,7 @@ curl -X POST "<BASE_URL>/api/public/v1/recipient/import" \
 
 ---
 
-## **3. One-off Bulk Updates**
+## **One-off Bulk Updates**
 
 Change multiple recipients at once — for example, after reorganising departments or updating titles.
 
@@ -184,7 +184,7 @@ curl -X POST "<BASE_URL>/api/public/v1/recipient/import" \
 
 ---
 
-## **4. Selective User or Group Deletion**
+## **Selective User or Group Deletion**
 
 Remove specific recipients or groups that are no longer needed.
 
@@ -216,7 +216,7 @@ curl -X POST "<BASE_URL>/api/public/v1/recipient/import" \
 
 ---
 
-## **5. Export for Auditing or Reporting**
+## **Export for Auditing or Reporting**
 
 Download the current state of recipients or groups for **compliance checks, backup, or integration with BI tools**.
 
