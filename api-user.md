@@ -15,6 +15,7 @@
 - **v2.9**: Add `recipientsToDelete` and `groupsToDelete` (2023-07-11)
 - **v2.10**: Add `functions` to recipient import (2024-01-15)
 - **v2.11**: Rewrite and restructuring (2025-08-07)
+- **v2.12**: Add `X-API-Key` authentication option (2025-08-23)
 
 </details>
 
@@ -26,13 +27,40 @@ The **User Management API** provides secure, programmatic access to manage recip
 
 ### 🔐 Authentication
 
-All endpoints of the User API require authentication using a **dedicated admin account** that has been assigned the `API user` permission within the safeREACH web interface. Without this permission, API access will be denied.
+All endpoints of the User API support two authentication mechanisms.
 
-Depending on the type of endpoint, authentication credentials must be provided either in the **HTTP request body** or via **HTTP headers**:
+> Note: The customerOrGroupId parameter must always be provided:
+> 
+> - For **JSON-based import endpoints**: in the request body as `customerOrGroupId`
+> - For **GET, DELETE, or import (CSV) endpoints**: in the header `X-CustomerId`
 
-**1. JSON-based endpoints (e.g., recipient or group import via JSON)**
+### **Option 1: API Key Authentication**
 
-For endpoints that accept JSON payloads (`Content-Type: application/json; charset=utf-8`), provide credentials in the **request body**:
+Use an API key provided by the safeREACH support team.
+
+| Header | Required | Description |
+| --- | --- | --- |
+| `X-API-Key` | ✅ | API key provided by support |
+| `X-CustomerId` | ✅ | Customer ID or Group ID for **GET, DELETE, or import (CSV) endpoints** |
+| `Content-Type` | ✅ | `application/json; charset=utf-8` |
+
+
+**Notes:**
+- This method **works for all endpoints** except:  
+  - `GET /api/public/v1/recipient/{customerOrGroupId}/export`  
+  - `GET /api/public/v1/group/{customerOrGroupId}/export`  
+- For those two export endpoints, you must continue using **Option 2** (Admin Account Authentication).  
+- API keys are customer-specific and should be stored securely.
+
+---
+
+### **Option 2: Admin Account Authentication**
+Use a **dedicated admin account** with the `API user` permission provided by the safeREACH support team.
+
+
+**For JSON-based endpoints (e.g., recipient or group import via JSON)**
+
+For endpoints that accept JSON payloads, provide credentials in the **request body**:
 
 - `customerOrGroupId`:
     - For most customers, this is your **Customer ID** (e.g., `"500027"`).
@@ -41,7 +69,7 @@ For endpoints that accept JSON payloads (`Content-Type: application/json; charse
 - `username`: the **username** of your admin API user
 - `password`: the **password** of your admin API user
 
-**2. CSV-based or non-body endpoints (e.g., CSV imports, exports, deletion)**
+**For CSV-based or non-body endpoints (e.g., CSV imports, exports, deletion)**
 
 For CSV-based or HTTP `GET` / `DELETE` endpoints, credentials must be provided via **HTTP headers**:
 
@@ -60,6 +88,7 @@ For CSV-based or HTTP `GET` / `DELETE` endpoints, credentials must be provided v
 > - Only one customer or group context can be targeted per request.
 
 ---
+
 
 ## 🌐 Data Center Selection
 
@@ -114,7 +143,7 @@ If you're unsure, ask support which region your account is in.
 
 | Field | Type | Required | Description | Default |
 | --- | --- | --- | --- | --- |
-| `functionCode` | string | Yes | Function code (e.g., `"F1"`) | — |
+| `functionCode` | string | Yes | Function code (e.g., `"F1"` refers to Display order in the UI and has to be unique) | — |
 
 ---
 
@@ -137,7 +166,7 @@ If you're unsure, ask support which region your account is in.
 | `id` | `string (UUIDv4)` | No | Internal ID. Leave empty for new function creation. | — |
 | `externalId` | `string` | No | Optional external ID. Required only if using external-based updates. | — |
 | `customerId` | `string` | Yes | Customer ID owning the function. | — |
-| `functionCode` | `string` | Yes | Code starting with `F` and followed by a number (e.g., `F1`, `F999999`). Immutable after creation. | — |
+| `functionCode` | `string` | Yes | Code starting with `F` and followed by a number (e.g., `F1`, `F999999`). Immutable after creation. Refers to Display order in UI and has to be unique. | — |
 | `name` | `string` | Yes | Human-readable function name (e.g., `"IT Admin"`, `"First Aid Officer"`) | — |
 
 ---
@@ -170,8 +199,6 @@ Request:
 ```json
 {
   "customerOrGroupId": "500027",
-  "username": "api-user",
-  "password": "securePass",
   "dryRun": true,
   "externalId": false,
   "merge": false,
@@ -262,8 +289,6 @@ Request:
 ```json
 {
   "customerOrGroupId": "500027",
-  "username": "api-user",
-  "password": "securePass",
   "dryRun": true,
   "externalId": true,
   "recipients": [
@@ -304,13 +329,27 @@ Response:
 ### CSV Import (Recipients or Groups)
 
 - `Content-Type: text/csv`
-- `X-CustomerId`, `X-Username`, `X-Password` headers
+- `X-CustomerId`, `X-API-Key` or (`X-Username`, `X-Password`) headers
 - Use `;` as separator
 - `1` = member of group, `0` = not member
+- `customerOrGroupId` is always passed in `X-CustomerId`
+- Import options can be added as query parameters:
+    - `dryRun`
+    - `externalId`
+    - `partial`
+    - `merge`
+    - `deleteOnlyExternal`
 
 **CSV example for recipients:**
 
-```csv
+
+```http
+POST /blaulicht/api/public/v1/recipient/import?dryRun=true&merge=false HTTP/1.1
+Host: api.safereach.com
+X-API-Key: your-api-key-here
+X-CustomerId: 500027
+Content-Type: application/json; charset=utf-8
+
 id;externalId;customerId;givenname;surname;msisdn;email;comment;G1;G2
 ;;500027;Max;Mustermann;+4366412345678;max@example.com;Ops;1;0
 ```
