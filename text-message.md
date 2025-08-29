@@ -115,19 +115,23 @@ XY:4468503.333/5333317.780
 
 ---
 
-## ✉️ Full Example
+## ✉️ Examples
 
+### Full Example
 ```text
 K500027V1G1T+4366412345678:Fire in server room(48.205587,16.342917)
 ```
-
-### Breakdown:
+### Simple Example
+```text
+K500027V1:Fire in server room
+```
+#### Breakdown:
 
 - `K500027` → Customer ID
 - `V1` → Scenario number
 - `G2` → Add group 2
 - `T+4366412345678` → Add extra recipient
-- `"Fire in server room"` → Free-text alarm message
+- `"Fire in server room"` → Free-text alarm message (used for scenario description)
 - `(48.205587,16.342917)` → Coordinates
 
 ---
