@@ -14,6 +14,7 @@
 | v1.6 | 2022-11-28 | Removed `fr`, `it` from allowed languages; clarified usage of `language` |
 | v1.7 | 2023-07-13 | Added `retries`, `timeout`, and `delay` for voice calls |
 | v1.8 | 2025-08-08 | Reworked structure and fixed wordings. |
+| v1.9 | 2026-03-23 | Removed type PUSH from supported types. |
 
 </details>
 
@@ -23,14 +24,12 @@
 
 ---
 
-The Messaging API allows transactional sending of ad-hoc messages via multiple communication channels (SMS, EMAIL, VOICE, PUSH). It is designed for flexible, low-latency delivery in critical systems.
+The Messaging API allows transactional sending of ad-hoc messages via multiple communication channels (SMS, EMAIL, VOICE). It is designed for flexible, low-latency delivery in critical systems.
 
 The API supports:
 
 - Multi-channel fallback delivery
-- In-app push notifications (safeREACH app)
 - Voice call retries
-- Language and title control for push messages
 - Per-target delivery error reporting
 
 ### ✅ API Credentials
@@ -79,12 +78,9 @@ Contact support if you anticipate high traffic or require an increase in limits.
 
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
-| `channel` | array of enum | Yes | List of one or more of `SMS`, `EMAIL`, `VOICE`, `PUSH` |
+| `channel` | array of enum | Yes | List of one or more of `SMS`, `EMAIL`, `VOICE` |
 | `msisdn` | string | Required if `SMS` or `VOICE` is used | Phone number in [E.164 format](https://en.wikipedia.org/wiki/E.164) |
 | `email` | string | Required if `EMAIL` is used | Email address of the target |
-
-> PUSH is used to send messages to the safeREACH mobile app. The target must be registered in the system beforehand.
-> 
 
 **Example:**
 
@@ -118,15 +114,6 @@ Contact support if you anticipate high traffic or require an increase in limits.
 }
 ```
 
-```json
-{
-  "message": "Could not notify target because channel PUSH was not defined.",
-  "channel": "PUSH",
-  "target": "+43123456789",
-  "status": 409
-}
-```
-
 ---
 
 ## 🔌 Endpoints
@@ -145,8 +132,7 @@ If not specified differently, all endpoints require header `Content-Type: applic
 | `password` | string | Yes | — | API password |
 | `customerId` | string | Yes | — | Customer ID |
 | `message` | string | Yes | — | Message content (plain text, no HTML) |
-| `type` | string | Optional | — | One of `info`, `alarm`. Required if any target includes `PUSH`. |
-| `title` | string | Optional | — | Push title shown in app. Required if `PUSH` is used. |
+| `type` | string | Optional | — | One of `info`, `alarm`. |
 | `language` | string (enum) | Optional | — | `en`, `de`. If not set, defaults to customer language. |
 | `retries` | integer | Optional | `2` | Number of retries for unanswered voice calls |
 | `timeout` | integer (sec) | Optional | `60` | Wait time for voice call response (in seconds) |
@@ -171,12 +157,12 @@ If not specified differently, all endpoints require header `Content-Type: applic
   "delay": 180,
   "targets": [
     {
-      "channel": ["SMS", "VOICE", "EMAIL"],
+      "channel": ["SMS", "EMAIL"],
       "msisdn": "+43123456789",
       "email": "target@acme.com"
     },
     {
-      "channel": ["PUSH"],
+      "channel": ["VOICE"],
       "msisdn": "+436641234567"
     }
   ]
