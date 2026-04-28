@@ -12,6 +12,7 @@
 - **v1.6**: Fixed typos and formatting (2022-09-13)
 - **v1.7**: Added support for terminating alarms and sending updates to active scenarios (2024-11-28)
 - **v1.8**: Reworked structure. Added data center location Vienna. Fixed some wordings and typos. (2025-08-07)
+- **v1.9**: Added Concepts section. Documented AlarmData, RecipientData, and missing field descriptions. (2026-04-28)
 
 </details>
 
@@ -78,6 +79,23 @@ Contact support if you anticipate high traffic or require an increase in limits.
 
 ---
 
+## 🗂️ Concepts
+
+### Scenario Config vs Scenario
+
+A **Scenario Config** is a reusable alert template created and managed in the safeREACH web interface. It defines everything about an alert up front: the recipient groups, the message content, the notification behavior, and more. Each config has a stable `scenarioConfigId` that you use when triggering via the API.
+
+When a Scenario Config is triggered — either via the API or manually — a new **Scenario** instance is created. The scenario represents a single live alert event. It has its own `scenarioId`, tracks who was alerted, and can be queried, updated, or terminated independently. The same config can be triggered multiple times, producing a separate scenario each time.
+
+```
+ScenarioConfig  ──triggers──▶  Scenario  ──contains──▶  Alarm(s)
+(template)                     (instance)                (per channel)
+```
+
+Use `scenarioConfigId` to trigger an alert. Use the returned `scenarioId` to track it, send updates, or terminate it.
+
+---
+
 ## 🧱 Data Models
 
 ### `ScenarioConfigData`
@@ -91,6 +109,14 @@ Contact support if you anticipate high traffic or require an increase in limits.
 ```
 
 ### `ScenarioPreviewData`
+
+- `scenarioId` — unique identifier for this scenario instance
+- `scenarioConfigId` — ID of the Scenario Config that was triggered
+- `authorId` — ID of the user or API account that triggered the scenario
+- `authorName` — display name of the user or API account that triggered the scenario
+- `creationDate` — ISO 8601 timestamp when the scenario record was created
+- `startDate` — ISO 8601 timestamp when the alert was sent to recipients
+- `endDate` — ISO 8601 timestamp when the scenario was terminated; `null` if still active
 
 ```json
 {
@@ -106,6 +132,16 @@ Contact support if you anticipate high traffic or require an increase in limits.
 
 ### `ScenarioData`
 
+- `scenarioId` — unique identifier for this scenario instance
+- `scenarioConfigId` — ID of the Scenario Config that was triggered
+- `authorId` — ID of the user or API account that triggered the scenario
+- `authorName` — display name of the user or API account that triggered the scenario
+- `usersAlertedCount` — total number of recipients alerted across all alarms in this scenario
+- `creationDate` — ISO 8601 timestamp when the scenario record was created
+- `startDate` — ISO 8601 timestamp when the alert was sent to recipients
+- `endDate` — ISO 8601 timestamp when the scenario was terminated; `null` if still active
+- `alarms` — list of `AlarmData` objects, one per alert channel dispatched for this scenario
+
 ```json
 {
   "scenarioId": "123-ABC-asdfqwerasdf",
@@ -117,8 +153,84 @@ Contact support if you anticipate high traffic or require an increase in limits.
   "startDate": "2018-12-13T14:56:53.016Z",
   "endDate": null,
   "alarms": [
-    // <AlarmData>
+    // see AlarmData below
   ]
+}
+```
+
+### `AlarmData`
+
+- `alarmId` — unique identifier for this alarm instance
+- `scenarioId` — ID of the parent scenario
+- `alarmDate` — ISO 8601 timestamp when the alarm was triggered
+- `endDate` — ISO 8601 timestamp when the alarm ends; `null` if still active
+- `alarmText` — full alarm message shown to recipients
+- `authorName` — name of the user or API account that triggered the alarm
+- `usersAlertedCount` — number of recipients who received the alarm
+- `needsAcknowledgement` — whether recipients are required to acknowledge the alarm
+- `audioUrl` — URL of a generated text-to-speech audio file; `null` if not available
+- `geolocation` — location context for the alarm (see below)
+- `recipients` — list of alerted recipients; each entry is a `RecipientData` object (see below)
+- `topics` — message broker topics for real-time updates (e.g. chat, participation)
+
+```json
+{
+  "alarmId": "b3a95e14-ed16-40ef-9ad1-9596ff1cad3e",
+  "scenarioId": "5fe5b22f-9162-45fc-a6a4-83e47ad532ef",
+  "alarmDate": "2026-04-28T07:29:29.850Z",
+  "endDate": "2026-05-05T07:29:29.850Z",
+  "authorName": "jan tim",
+  "alarmText": "Incident at Building A. Please evacuate immediately.",
+  "audioUrl": null,
+  "needsAcknowledgement": true,
+  "usersAlertedCount": 1,
+  "geolocation": {
+    "coordinates": null,
+    "positionSetByAuthor": false,
+    "radius": null,
+    "distance": null,
+    "duration": null,
+    "address": null
+  },
+  "recipients": [
+    {
+      "id": "6b4f4f6e-f1e3-49de-99ec-8f9f7b774e89",
+      "name": "tim jan",
+      "msisdn": "+4369916064457",
+      "comment": "",
+      "participation": "yes",
+      "participationMessage": "Trigger",
+      "functions": []
+    }
+  ],
+  "topics": [
+    {
+      "topicId": "ALARM.PARTICIPATION.b3a95e14-ed16-40ef-9ad1-9596ff1cad3e-...",
+      "type": "PARTICIPATION"
+    }
+  ]
+}
+```
+
+### `RecipientData`
+
+- `id` — unique identifier for this recipient
+- `name` — display name of the recipient
+- `msisdn` — phone number in [E.164 format](https://en.wikipedia.org/wiki/E.164)
+- `comment` — optional comment attached to this recipient entry
+- `participation` — recipient's response status; one of `"yes"`, `"no"`, `"unknown"`, `"pending"`
+- `participationMessage` — message provided by the recipient alongside their response; `null` if no message was given
+- `functions` — list of roles or functions assigned to this recipient
+
+```json
+{
+  "id": "6b4f4f6e-f1e3-49de-99ec-8f9f7b774e89",
+  "name": "tim jan",
+  "msisdn": "+4369916064457",
+  "comment": "",
+  "participation": "yes",
+  "participationMessage": "Trigger",
+  "functions": []
 }
 ```
 
@@ -198,9 +310,9 @@ HTTP 200 OK
   "scenarioConfigIds": [
     "0123-ABC-asdfqwerasdf"
   ],
-  "scenarioPreviews": {
+  "scenarioPreviews": [
     // <ScenarioPreviewData>
-  }
+  ]
 }
 ```
 
@@ -400,7 +512,7 @@ HTTP 200 OK
 
 **POST** `/api/alarm/v1/scenario/{scenarioId}/updates`
 
-**Path Variable:** `{scenarioId} - can be extracted from the response when triggering by [scenario config id](#trigger-by-scenario-config-id) or [scenario code](#trigger-by-scenario-code), alternatively, can be obtained when [listing scenarios](#list-scenarios).
+**Path Variable:** `{scenarioId}` - can be extracted from the response when triggering by [scenario config id](#trigger-by-scenario-config-id) or [scenario code](#trigger-by-scenario-code), alternatively, can be obtained when [listing scenarios](#list-scenarios).
 
 **Parameters:**
 
