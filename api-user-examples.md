@@ -1,5 +1,15 @@
 # 📋 Common Use Cases - User Management API
 
+<details>
+  <summary><h2>🧩 Version History</h2></summary>
+
+- **v1.0**: Initial draft (2025-08-07)
+- **v1.1**: Fix invalid JSON comment in partial sync example; add X-API-Key auth note; fix Quick Reference table formatting; remove duplicate safety checklist snippet (2026-05-06)
+
+</details>
+
+---
+
 This section shows typical ways customers use the [User API](./api-user.md) — from **business goals** to **exact API calls**.
 
 It’s structured so you can:
@@ -12,12 +22,12 @@ It’s structured so you can:
 
 | Use Case | Endpoint(s) | Key Parameters / Headers | Tips |
 | --- | --- | --- | --- |
-| **[Initial User & Group Onboarding](#initial-user--group-onboarding)** | `POST /api/public/v1/group/importPOST /api/public/v1/functions/{customerId}/importPOST /api/public/v1/recipient/import` | **Body:**`customerOrGroupId`, `username`, `password`,`dryRun`, `externalId`, `groups` / `functions` / `recipients` arrays | Import groups/functions **before** recipients. Use `dryRun=true` to validate. Assign `groups` and `functions` in recipient imports. |
-| **Daily / Scheduled Sync — [Full (Authoritative)](#a-full-sync-authoritative)** | `POST /api/public/v1/recipient/import` | **Body:**`externalId=true`, `partial=false` (optional), `deleteOnlyExternal=true` (optional), `merge=true`, `recipients` array | Use when the feed contains the **entire desired population**. Missing entries are deleted (subject to `deleteOnlyExternal`). Best for authoritative HR/AD exports. |
-| **Daily / Scheduled Sync — [Partial (Append/Update-Only)](#b-partial-sync-appendupdate-only)** | `POST /api/public/v1/recipient/import` | **Body:**`externalId=true`, `partial=true` (optional), `merge=true`, `recipients` array | Use when the feed contains only **new/updated entries**. Existing recipients not in the feed remain untouched. Best for delta updates or incremental syncs. |
-| **[One-off Bulk Updates](#one-off-bulk-updates)** | `POST /api/public/v1/recipient/import` | **Body:**`externalId=true`, `merge=true`, `dryRun=true`, `recipients` array | Ideal for department renames, adding functions, updating emails. Use `merge=true` to avoid overwriting unrelated fields. |
-| **[Selective User or Group Deletion](#selective-user-or-group-deletion)** | `DELETE /api/public/v1/recipient`**or** `POST /api/public/v1/recipient/import` with `recipientsToDelete` / `groupsToDelete` | **Body:**`externalId=true`, `deleteOnlyExternal=true`, `dryRun=true`, `recipientsToDelete` / `groupsToDelete` arrays | Use `deleteOnlyExternal=true` to avoid deleting manually added entries. Always preview with `dryRun=true`. |
-| **[Export for Auditing or Reporting](#export-for-auditing-or-reporting)** | `GET /api/public/v1/recipient/{customerOrGroupId}/exportGET /api/public/v1/group/{customerOrGroupId}/export` | **Headers:**`X-CustomerId`, `X-Username`, `X-Password`,`Accept: application/json` or `text/csv` | Use JSON for integration into BI tools, CSV for Excel/manual review. Export regularly for compliance audits. |
+| **[Initial User & Group Onboarding](#initial-user--group-onboarding)** | `POST /api/public/v1/group/import`<br>`POST /api/public/v1/functions/{customerId}/import`<br>`POST /api/public/v1/recipient/import` | **Body:** `customerOrGroupId`, `username`, `password`, `dryRun`, `externalId`, `groups` / `functions` / `recipients` arrays | Import groups/functions **before** recipients. Use `dryRun=true` to validate. Assign `groups` and `functions` in recipient imports. |
+| **Daily / Scheduled Sync — [Full (Authoritative)](#a-full-sync-authoritative)** | `POST /api/public/v1/recipient/import` | **Body:** `externalId=true`, `partial=false` (optional), `deleteOnlyExternal=true` (optional), `merge=true`, `recipients` array | Use when the feed contains the **entire desired population**. Missing entries are deleted (subject to `deleteOnlyExternal`). Best for authoritative HR/AD exports. |
+| **Daily / Scheduled Sync — [Partial (Append/Update-Only)](#b-partial-sync-appendupdate-only)** | `POST /api/public/v1/recipient/import` | **Body:** `externalId=true`, `partial=true` (optional), `merge=true`, `recipients` array | Use when the feed contains only **new/updated entries**. Existing recipients not in the feed remain untouched. Best for delta updates or incremental syncs. |
+| **[One-off Bulk Updates](#one-off-bulk-updates)** | `POST /api/public/v1/recipient/import` | **Body:** `externalId=true`, `merge=true`, `dryRun=true`, `recipients` array | Ideal for department renames, adding functions, updating emails. Use `merge=true` to avoid overwriting unrelated fields. |
+| **[Selective User or Group Deletion](#selective-user-or-group-deletion)** | `DELETE /api/public/v1/recipient`<br>**or** `POST /api/public/v1/recipient/import` with `recipientsToDelete` / `groupsToDelete` | **Body:** `externalId=true`, `deleteOnlyExternal=true`, `dryRun=true`, `recipientsToDelete` / `groupsToDelete` arrays | Use `deleteOnlyExternal=true` to avoid deleting manually added entries. Always preview with `dryRun=true`. |
+| **[Export for Auditing or Reporting](#export-for-auditing-or-reporting)** | `GET /api/public/v1/recipient/{customerOrGroupId}/export`<br>`GET /api/public/v1/group/{customerOrGroupId}/export` | **Headers:** `X-CustomerId`, `X-Username`, `X-Password`, `Accept: application/json` or `text/csv` | Use JSON for integration into BI tools, CSV for Excel/manual review. Export regularly for compliance audits. |
 
 
 ## **Initial User & Group Onboarding**
@@ -32,6 +42,19 @@ This is ideal for **migrating from spreadsheets** or **loading data from an HR e
 - **Key tips:**
     - Use `dryRun = true` to preview results before committing.
     - Import groups and functions before importing recipients that reference them.
+
+> 💡 **Auth options:** All examples below use Option 2 (username/password). To use **X-API-Key** instead, replace the `username`, `password`, and `customerOrGroupId` body fields with the `X-API-Key` and `X-CustomerId` headers — see the [authentication section](./api-user.md#-authentication) for details. Example for recipient import:
+> ```bash
+> curl -X POST "<BASE_URL>/api/public/v1/recipient/import" \
+>   -H "Content-Type: application/json; charset=utf-8" \
+>   -H "X-API-Key: <YOUR_API_KEY>" \
+>   -H "X-CustomerId: <CUSTOMER_ID>" \
+>   -d '{
+>     "dryRun": true,
+>     "externalId": false,
+>     "recipients": [ { ... } ]
+>   }'
+> ```
 
 **Example Requests:**
 
@@ -211,7 +234,7 @@ curl -X POST "<BASE_URL>/api/public/v1/recipient/import" \
         "msisdn": "+4366412345002",
         "givenname": "Grace",
         "surname": "Hopper",
-        "comment": "Dept: Engineering"   // updates comment only when merge=true
+        "comment": "Dept: Engineering"
       },
       {
         "externalId": "HR-2001",
@@ -242,32 +265,6 @@ curl -X POST "<BASE_URL>/api/public/v1/recipient/import" \
 - Consider `deleteOnlyExternal=true` in Full syncs to protect manually created records.
 - Ensure all identities in your source have unique, stable `externalId` values.
 - If you rely on MSISDN matching, set `merge=true` and keep MSISDNs unique.
-
-```bash
-curl -X POST "<BASE_URL>/api/public/v1/recipient/import" \
-  -H "Content-Type: application/json; charset=utf-8" \
-  -d '{
-    "customerOrGroupId": "<CUSTOMER_ID>",
-    "username": "<API_USER>",
-    "password": "<API_PASS>",
-    "dryRun": false,
-    "externalId": true,
-    "partial": true,
-    "merge": true,
-    "recipients": [
-      {
-        "externalId": "HR-123",
-        "customerId": "<CUSTOMER_ID>",
-        "msisdn": "+4366412345678",
-        "givenname": "Jane",
-        "surname": "Doe",
-        "email": "jane.doe@example.com",
-        "groups": [ { "groupId": "G1" } ]
-      }
-    ]
-  }'
-
-```
 
 ---
 
