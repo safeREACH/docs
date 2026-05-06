@@ -16,6 +16,7 @@
 - **v2.10**: Add `functions` to recipient import (2024-01-15)
 - **v2.11**: Rewrite and restructuring (2025-08-07)
 - **v2.12**: Add `X-API-Key` authentication option (2025-08-23)
+- **v2.13**: Fix CSV Content-Type example; expand group/function import sections; fix DELETE param definitions; add export API Key limitation callout; clarify `merge` flag; add rate limits section (2026-05-06)
 
 </details>
 
@@ -98,6 +99,17 @@ For CSV-based or HTTP `GET` / `DELETE` endpoints, credentials must be provided v
 | Vienna   | `https://api.safereach.at/blaulicht` |
 
 If you're unsure, ask support which region your account is in.
+
+---
+
+## ⏱️ Fair Use & Rate Limits
+
+API usage is subject to:
+
+- The **Fair Use Policy**
+- **Account-specific** rate limits
+
+Contact support if you anticipate high-volume imports or require an increase in limits.
 
 ---
 
@@ -186,7 +198,7 @@ If not specified differently, all endpoints require header `Content-Type: applic
 | `dryRun` | Boolean | Optional | false | Only simulate changes |
 | `externalId` | Boolean | Optional | false | Use external IDs |
 | `partial` | Boolean | Optional | false | Don’t delete missing records |
-| `merge` | Boolean | Optional | false | Merge by MSISDN, requires `externalId` |
+| `merge` | Boolean | Optional | false | When `true`, existing records are updated in place rather than replaced. Matching uses `externalId` when `externalId=true`, otherwise falls back to MSISDN. |
 | `deleteOnlyExternal` | Boolean | Optional | false | Only delete records with `externalId` |
 | `recipientsToDelete` | List | Optional | null | List of `externalId` |
 | `groupsToDelete` | List | Optional | null | List of `groupId`s |
@@ -247,9 +259,11 @@ Response:
 
 **`GET /api/public/v1/group/{customerOrGroupId}/export`**
 
+> ⚠️ **API Key auth is not supported for these endpoints.** You must use Option 2 (Admin Account Authentication) with `X-Username` and `X-Password` headers.
+
 **Headers**:
 
-- `X-Username`, `X-Password`
+- `X-CustomerId`, `X-Username`, `X-Password`
 - `Accept`: `application/json` or `text/csv`
 
 **JSON Example**
@@ -276,11 +290,11 @@ UUIDv4;;500027;Jane;Doe;+4366412345678;jane@example.com;;1;0
 
 **Request Body**:
 
-| Parameter | Required | Description |
-| --- | --- | --- |
-| `dryRun` | ✅ Yes | Preview vs delete |
-| `externalId` | ✅ Yes | Use externalId matching |
-| `recipients` | ✅ Yes | List of `RecipientBaseData` |
+| Parameter | Required | Default | Description |
+| --- | --- | --- | --- |
+| `dryRun` | Optional | false | Preview the result without deleting. Strongly recommended before first run. |
+| `externalId` | Optional | false | Match recipients by `externalId` instead of internal `id` |
+| `recipients` | ✅ Yes | — | List of `RecipientBaseData` |
 
 **Example**
 
@@ -315,14 +329,102 @@ Response:
 
 ---
 
-### Import Groups / Functions
+### Import Groups
 
 **`POST /api/public/v1/group/import`**
 
+| Parameter | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `dryRun` | Boolean | Optional | false | Only simulate changes |
+| `externalId` | Boolean | Optional | false | Use external IDs |
+| `partial` | Boolean | Optional | false | Don't delete missing records |
+| `merge` | Boolean | Optional | false | Merge by groupId |
+| `deleteOnlyExternal` | Boolean | Optional | false | Only delete records with `externalId` |
+| `groupsToDelete` | List | Optional | null | List of `groupId`s to delete |
+| `groups` | List | ✅ Yes | — | List of `GroupData` objects |
+
+> ⚠️ **Known issue:** Creating groups with `externalId` set results in system groups that cannot be edited or deleted. See [Known Issues](#-known-issues).
+
+**Example**
+
+Request:
+
+```json
+{
+  "customerOrGroupId": "500027",
+  "username": "<API_USER>",
+  "password": "<API_PASS>",
+  "dryRun": true,
+  "externalId": false,
+  "groups": [
+    { "id": "", "externalId": "", "customerId": "500027", "groupId": "G1", "name": "Operations" },
+    { "id": "", "externalId": "", "customerId": "500027", "groupId": "G2", "name": "IT" }
+  ]
+}
+```
+
+Response:
+
+```json
+{
+  "result": "OK",
+  "created": 2,
+  "updated": 0,
+  "deleted": 0,
+  "request": {
+    "dryRun": true,
+    "externalId": false
+  }
+}
+```
+
+---
+
+### Import Functions
+
 **`POST /api/public/v1/functions/{customerId}/import`**
 
-- Accepts same flags as `/recipient/import`
-- `groups` and `functions` are lists of `GroupData` / `FunctionData`
+> Note: Unlike the group and recipient import endpoints, the customer ID is passed as a **path variable** (`{customerId}`) rather than solely in the request body.
+
+| Parameter | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `dryRun` | Boolean | Optional | false | Only simulate changes |
+| `externalId` | Boolean | Optional | false | Use external IDs |
+| `partial` | Boolean | Optional | false | Don't delete missing records |
+| `functions` | List | ✅ Yes | — | List of `FunctionData` objects |
+
+**Example**
+
+Request:
+
+```json
+{
+  "customerOrGroupId": "500027",
+  "username": "<API_USER>",
+  "password": "<API_PASS>",
+  "dryRun": true,
+  "externalId": false,
+  "functions": [
+    { "id": "", "externalId": "", "customerId": "500027", "functionCode": "F1", "name": "First Aid Officer" },
+    { "id": "", "externalId": "", "customerId": "500027", "functionCode": "F2", "name": "Crisis Manager" }
+  ]
+}
+```
+
+Response:
+
+```json
+{
+  "result": "OK",
+  "created": 2,
+  "updated": 0,
+  "deleted": 0,
+  "request": {
+    "dryRun": true,
+    "externalId": false
+  }
+}
+```
 
 ---
 
@@ -348,7 +450,7 @@ POST /blaulicht/api/public/v1/recipient/import?dryRun=true&merge=false HTTP/1.1
 Host: api.safereach.com
 X-API-Key: your-api-key-here
 X-CustomerId: 500027
-Content-Type: application/json; charset=utf-8
+Content-Type: text/csv
 
 id;externalId;customerId;givenname;surname;msisdn;email;comment;G1;G2
 ;;500027;Max;Mustermann;+4366412345678;max@example.com;Ops;1;0
