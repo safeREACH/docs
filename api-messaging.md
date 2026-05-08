@@ -15,6 +15,7 @@
 | v1.7 | 2023-07-13 | Added `retries`, `timeout`, and `delay` for voice calls |
 | v1.8 | 2025-08-08 | Reworked structure and fixed wordings. |
 | v1.9 | 2026-03-23 | Removed type PUSH from supported types. |
+| v2.0 | 2026-05-06 | Remove `title` and `type` fields; clarify simultaneous multi-channel delivery; add fire-and-forget note; mark `retries`/`timeout`/`delay` as VOICE-only; fix `ErrorResponse.channel` nullable type; add NOK response example; remove incorrect 409 from error table; clarify `errors` behaviour per result type. |
 
 </details>
 
@@ -22,15 +23,15 @@
 
 ## 🎯 Purpose & Access
 
----
-
 The Messaging API allows transactional sending of ad-hoc messages via multiple communication channels (SMS, EMAIL, VOICE). It is designed for flexible, low-latency delivery in critical systems.
 
 The API supports:
 
-- Multi-channel fallback delivery
-- Voice call retries
-- Per-target delivery error reporting
+- **Simultaneous multi-channel delivery** — all channels in a target's `channel` array are triggered at the same time; order does not determine priority
+- **Voice call retries** — configurable retry count, timeout, and delay for unanswered calls
+- **Per-target delivery error reporting**
+
+> ⚠️ The API responds immediately after the request is accepted. Delivery outcomes (especially for voice) happen asynchronously and are not reflected in the response.
 
 ### ✅ API Credentials
 
@@ -82,6 +83,12 @@ Contact support if you anticipate high traffic or require an increase in limits.
 | `msisdn` | string | Required if `SMS` or `VOICE` is used | Phone number in [E.164 format](https://en.wikipedia.org/wiki/E.164) |
 | `email` | string | Required if `EMAIL` is used | Email address of the target |
 
+> **Targeting behaviour:**
+> - Targets **do not need to be registered** in the safeREACH system — you can send to any MSISDN or email address.
+> - If a target **is** a known recipient in the system, their account settings apply:
+>   - **SMS:** the channel must be enabled on their account.
+>   - **EMAIL:** an email address must be provided explicitly in the request, and it must match the address stored in their account.
+
 **Example:**
 
 ```json
@@ -99,9 +106,9 @@ Contact support if you anticipate high traffic or require an increase in limits.
 | Field | Type | Description |
 | --- | --- | --- |
 | `message` | string | Description of the error |
-| `channel` | string | Channel that failed (e.g., `SMS`, `EMAIL`, etc.) |
+| `channel` | `string \| null` | Channel that failed (e.g., `SMS`, `EMAIL`). `null` if the error is not channel-specific (e.g. target not found). |
 | `target` | string | Phone number or email address that was not reachable |
-| `status` | integer | HTTP-like status code (`404` for not found, `409` for delivery conflict, etc.) |
+| `status` | integer | Status code (`404` for target not found, etc.) |
 
 **Examples:**
 
@@ -131,14 +138,38 @@ If not specified differently, all endpoints require header `Content-Type: applic
 | `username` | string | Yes | — | API username |
 | `password` | string | Yes | — | API password |
 | `customerId` | string | Yes | — | Customer ID |
-| `message` | string | Yes | — | Message content (plain text, no HTML) |
-| `type` | string | Optional | — | One of `info`, `alarm`. |
+| `message` | string | Yes | — | Message content (plain text, no HTML). For **EMAIL** targets, the first line is used as the subject and the remainder as the body. For **VOICE** targets, SSML markup is supported for controlling speech and pacing (see note below). |
 | `language` | string (enum) | Optional | — | `en`, `de`. If not set, defaults to customer language. |
-| `retries` | integer | Optional | `2` | Number of retries for unanswered voice calls |
-| `timeout` | integer (sec) | Optional | `60` | Wait time for voice call response (in seconds) |
-| `delay` | integer (sec) | Optional | `300` | Delay before voice call retry (in seconds) |
+| `retries` | integer | Optional | `2` | **VOICE only.** Number of retries for unanswered voice calls |
+| `timeout` | integer (sec) | Optional | `60` | **VOICE only.** Wait time before a voice call is considered unanswered (in seconds) |
+| `delay` | integer (sec) | Optional | `300` | **VOICE only.** Delay between voice call retries (in seconds) |
 | `targets` | array of `MessageTarget` | Yes | — | Recipients list |
 
+
+> 💡 **VOICE — SSML support:** For voice calls, the `message` field accepts [SSML (Speech Synthesis Markup Language)](https://www.w3.org/TR/speech-synthesis/) to control speech and pacing. Wrap the content in `<speak>` tags and use elements like `<break>` to insert pauses:
+> ```xml
+> <speak>
+>
+> Attention.
+>
+> <break time="700ms"/>
+>
+> This is an important alert.
+>
+> <break time="600ms"/>
+>
+> Please follow the instructions in the safeREACH application.
+>
+> <break time="900ms"/>
+>
+> I repeat.
+>
+> <break time="500ms"/>
+>
+> Please follow the instructions in the safeREACH application.
+>
+> </speak>
+> ```
 
 **Example Request:**
 
@@ -149,8 +180,6 @@ If not specified differently, all endpoints require header `Content-Type: applic
   "password": "mySuperSecretPwd",
   "customerId": "500027",
   "message": "Hello\n\nYou got some✉️",
-  "type": "info",
-  "title": "New Notification",
   "language": "en",
   "retries": 3,
   "timeout": 45,
@@ -169,6 +198,27 @@ If not specified differently, all endpoints require header `Content-Type: applic
 }
 ```
 
+**Example Request (VOICE with SSML):**
+
+```json
+{
+  "username": "myUser",
+  "password": "mySuperSecretPwd",
+  "customerId": "500027",
+  "message": "<speak>\n\nAttention.\n\n<break time=\"700ms\"/>\n\nThis is an important alert.\n\n<break time=\"600ms\"/>\n\nPlease follow the instructions in the safeREACH application.\n\n<break time=\"900ms\"/>\n\nI repeat.\n\n<break time=\"500ms\"/>\n\nPlease follow the instructions in the safeREACH application.\n\n</speak>",
+  "language": "en",
+  "retries": 2,
+  "timeout": 60,
+  "delay": 300,
+  "targets": [
+    {
+      "channel": ["VOICE"],
+      "msisdn": "+436641234567"
+    }
+  ]
+}
+```
+
 ---
 
 #### Response
@@ -176,13 +226,13 @@ If not specified differently, all endpoints require header `Content-Type: applic
 | Field | Type | Description |
 | --- | --- | --- |
 | `result` | string | One of `OK`, `NOK`, `PARTIAL` |
-| `errors` | array of `ErrorResponse` | Empty if all messages succeeded |
+| `errors` | array of `ErrorResponse` | Per-target error details. Empty for `OK` and `NOK`; populated for `PARTIAL`. |
 
 **`result` meanings:**
 
 - `OK`: All targets were notified
-- `NOK`: None were notified
-- `PARTIAL`: Some targets failed
+- `NOK`: None were notified (e.g. all targets unknown). `errors` is empty.
+- `PARTIAL`: Some targets failed. `errors` contains details for the failed targets.
 
 ---
 
@@ -191,6 +241,17 @@ If not specified differently, all endpoints require header `Content-Type: applic
 ```json
 {
   "result": "OK",
+  "errors": []
+}
+```
+
+---
+
+**Example: No Targets Notified**
+
+```json
+{
+  "result": "NOK",
   "errors": []
 }
 ```
@@ -224,5 +285,5 @@ The following errors can be returned from the API:
 | 400 | Bad Request | Malformed JSON or invalid data format |
 | 401 | Unauthorized | Invalid username or password |
 | 403 | Forbidden | Missing permissions or invalid customer context |
-| 404 | Not Found | Target was not found in the system |
-| 409 | Conflict | Unable to deliver message via all channels |
+
+Partial or full delivery failures are not returned as HTTP error codes — they are reflected in the `result` field (`PARTIAL` or `NOK`) within a `200 OK` response.
